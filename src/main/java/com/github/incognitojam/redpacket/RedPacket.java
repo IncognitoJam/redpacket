@@ -1,7 +1,7 @@
 package com.github.incognitojam.redpacket;
 
-import com.github.incognitojam.redpacket.engine.GameLogic;
-import com.github.incognitojam.redpacket.engine.Window;
+import com.github.incognitojam.redpacket.engine.lifecycle.GameLogic;
+import com.github.incognitojam.redpacket.engine.graphics.Window;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;

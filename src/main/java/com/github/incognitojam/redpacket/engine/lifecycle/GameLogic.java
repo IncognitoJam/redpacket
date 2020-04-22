@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket.engine;
+package com.github.incognitojam.redpacket.engine.lifecycle;
 
 public interface GameLogic {
     void init();

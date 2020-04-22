@@ -1,12 +1,14 @@
 package com.github.incognitojam.redpacket.engine;
 
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -70,6 +72,21 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(handle);
+
+        // This line is critical for LWJGL's interoperation with GLFW's
+        // OpenGL context, or any context that is managed externally.
+        // LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL
+        // bindings available for use.
+        GL.createCapabilities();
+    }
+
+    public void update() {
+        glfwPollEvents();
+    }
+
+    public void swapBuffers() {
+        glfwSwapBuffers(handle);
     }
 
     public void destroy() {
@@ -86,9 +103,12 @@ public class Window {
         return glfwWindowShouldClose(handle);
     }
 
-    public void update() {
-        glfwSwapBuffers(handle);
-        glfwPollEvents();
+    public void setClearColor(float red, float green, float blue, float alpha) {
+        glClearColor(red, green, blue, alpha);
+    }
+
+    public void clear() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     public String getTitle() {

@@ -26,7 +26,7 @@ public class GameLoop implements Runnable {
         loopThread.start();
     }
 
-    private void init() {
+    private void init() throws Exception {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
@@ -79,8 +79,13 @@ public class GameLoop implements Runnable {
 
     @Override
     public void run() {
-        init();
-        loop();
-        destroy();
+        try {
+            init();
+            loop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            destroy();
+        }
     }
 }

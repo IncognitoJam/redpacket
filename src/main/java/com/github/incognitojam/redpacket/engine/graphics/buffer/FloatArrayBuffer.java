@@ -11,6 +11,6 @@ public class FloatArrayBuffer extends ArrayBuffer<FloatBuffer> {
 
     @Override
     public void upload(FloatBuffer data) {
-        glBufferData(vboId, data, usage);
+        glBufferData(target, data, usage);
     }
 }

@@ -42,7 +42,22 @@ public class Mesh {
         return vertexCount;
     }
 
+    public void bind() {
+        vao.bind();
+        vao.enable();
+    }
+
+    public void draw() {
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    }
+
+    public void unbind() {
+        vao.disable();
+        vao.unbind();
+    }
+
     public void destroy() {
+        vao.disable();
         vbo.destroy();
         vao.destroy();
     }

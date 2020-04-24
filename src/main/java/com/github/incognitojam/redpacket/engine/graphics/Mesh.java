@@ -2,38 +2,52 @@ package com.github.incognitojam.redpacket.engine.graphics;
 
 import com.github.incognitojam.redpacket.engine.graphics.array.VertexArray;
 import com.github.incognitojam.redpacket.engine.graphics.buffer.FloatArrayBuffer;
+import com.github.incognitojam.redpacket.engine.graphics.buffer.IntArrayBuffer;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 public class Mesh {
     private final VertexArray vao;
-    private final FloatArrayBuffer vbo;
+    private final FloatArrayBuffer positionsVbo;
+    private final IntArrayBuffer indicesVbo;
     private final int vertexCount;
 
-    public Mesh(float[] positions) {
-        FloatBuffer verticesBuffer = null;
-        try {
-            verticesBuffer = MemoryUtil.memAllocFloat(positions.length);
-            vertexCount = positions.length / 3;
-            verticesBuffer.put(positions).flip();
+    public Mesh(float[] positions, int[] indices) {
+        vertexCount = indices.length;
 
+        FloatBuffer positionsBuffer = null;
+        IntBuffer indicesBuffer = null;
+        try {
             vao = new VertexArray();
             vao.bind();
 
-            vbo = new FloatArrayBuffer(GL_STATIC_DRAW);
-            vbo.bind();
-            vbo.upload(verticesBuffer);
+            positionsVbo = new FloatArrayBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+            positionsBuffer = MemoryUtil.memAllocFloat(positions.length);
+            positionsBuffer.put(positions).flip();
+            positionsVbo.bind();
+            positionsVbo.upload(positionsBuffer);
             vao.attrib(0, 3, GL_FLOAT, false, 0, 0);
-            vbo.unbind();
+            positionsVbo.unbind();
+
+            indicesVbo = new IntArrayBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
+            indicesBuffer = MemoryUtil.memAllocInt(indices.length);
+            indicesBuffer.put(indices).flip();
+            indicesVbo.bind();
+            indicesVbo.upload(indicesBuffer);
+            indicesVbo.unbind();
 
             vao.unbind();
         } finally {
-            if (verticesBuffer != null) {
-                MemoryUtil.memFree(verticesBuffer);
+            if (positionsBuffer != null) {
+                MemoryUtil.memFree(positionsBuffer);
+            }
+            if (indicesBuffer != null) {
+                MemoryUtil.memFree(indicesBuffer);
             }
         }
     }
@@ -44,21 +58,26 @@ public class Mesh {
 
     public void bind() {
         vao.bind();
+        positionsVbo.bind();
+        indicesVbo.bind();
         vao.enable();
     }
 
     public void draw() {
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
     }
 
     public void unbind() {
         vao.disable();
+        positionsVbo.unbind();
+        indicesVbo.unbind();
         vao.unbind();
     }
 
     public void destroy() {
         vao.disable();
-        vbo.destroy();
+        positionsVbo.destroy();
+        indicesVbo.destroy();
         vao.destroy();
     }
 }

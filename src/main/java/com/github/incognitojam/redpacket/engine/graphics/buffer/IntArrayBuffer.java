@@ -1,16 +1,16 @@
 package com.github.incognitojam.redpacket.engine.graphics.buffer;
 
-import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL15.glBufferData;
 
-public class FloatArrayBuffer extends ArrayBuffer<FloatBuffer> {
-    public FloatArrayBuffer(int target, int usage) {
+public class IntArrayBuffer extends ArrayBuffer<IntBuffer> {
+    public IntArrayBuffer(int target, int usage) {
         super(target, usage);
     }
 
     @Override
-    public void upload(FloatBuffer data) {
+    public void upload(IntBuffer data) {
         glBufferData(target, data, usage);
     }
 }

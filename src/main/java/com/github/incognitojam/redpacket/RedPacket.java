@@ -10,8 +10,6 @@ import java.nio.file.Paths;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.glDisable;
 
 public class RedPacket implements GameLogic {
     private Window window;
@@ -37,9 +35,13 @@ public class RedPacket implements GameLogic {
         final int[] indices = new int[] {
             0, 1, 3, 3, 1, 2,
         };
-        mesh = new Mesh(positions, indices);
-
-        glDisable(GL_CULL_FACE);
+        float[] colours = new float[]{
+            0.5f, 0.0f, 0.0f,
+            0.0f, 0.5f, 0.0f,
+            0.0f, 0.0f, 0.5f,
+            0.0f, 0.5f, 0.5f,
+        };
+        mesh = new Mesh(positions, colours, indices);
     }
 
     @Override

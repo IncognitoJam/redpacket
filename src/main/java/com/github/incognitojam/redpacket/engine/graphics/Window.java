@@ -16,6 +16,7 @@ public class Window {
     private String title;
     private int width;
     private int height;
+    private boolean resized;
     private final long handle;
 
     public Window(String title, int width, int height) {
@@ -30,19 +31,22 @@ public class Window {
 
         // Create the window
         handle = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (handle == NULL)
+        if (handle == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
+        }
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            }
         });
 
         // Setup a window size callback. It will be called every time the window is resized.
         glfwSetWindowSizeCallback(handle, (window, w, h) -> {
             this.width = w;
             this.height = h;
+            this.resized = true;
         });
 
         // Get the thread stack and push a new frame
@@ -136,5 +140,13 @@ public class Window {
     public void setHeight(int height) {
         this.height = height;
         glfwSetWindowSize(handle, width, height);
+    }
+
+    public boolean isResized() {
+        return resized;
+    }
+
+    public void setResized(boolean resized) {
+        this.resized = resized;
     }
 }

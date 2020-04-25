@@ -8,19 +8,19 @@ import com.github.incognitojam.redpacket.engine.lifecycle.GameLogic;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 public class RedPacket implements GameLogic {
     private Window window;
     private ShaderProgram shader;
     private Mesh mesh;
-    private float color = 0.0F;
+
+    private int frames;
+    private long frameTime;
 
     @Override
     public void init() throws Exception {
-        window = new Window("Red Packet", 600, 300);
+        window = new Window("Red Packet", 600, 300, true);
 
         shader = new ShaderProgram();
         shader.addVertexShader(Files.readString(Paths.get("basic.vert")));
@@ -36,7 +36,7 @@ public class RedPacket implements GameLogic {
         final int[] indices = new int[] {
             0, 1, 3, 3, 1, 2,
         };
-        float[] colours = new float[]{
+        float[] colours = new float[] {
             0.5f, 0.0f, 0.0f,
             0.0f, 0.5f, 0.0f,
             0.0f, 0.0f, 0.5f,
@@ -49,18 +49,12 @@ public class RedPacket implements GameLogic {
     public void update(double interval) {
         window.update();
 
-        if (window.isKeyPressed(GLFW_KEY_UP)) {
-            color += interval;
-            if (color > 1.0F)
-                color = 1.0F;
-        } else if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-            color -= interval;
-            if (color < 0.0F)
-                color = 0.0F;
+        final long now = System.currentTimeMillis();
+        if (frameTime < now - 1000L) {
+            frameTime = now;
+            window.setTitle(String.format("Red Packet: %d FPS", frames));
+            frames = 0;
         }
-
-        window.setClearColor(color, color, color, 1.0F);
-        window.setTitle(String.format("Red Packet: %f", color));
     }
 
     @Override
@@ -81,6 +75,8 @@ public class RedPacket implements GameLogic {
         shader.unbind();
 
         window.swapBuffers();
+
+        frames++;
     }
 
     @Override

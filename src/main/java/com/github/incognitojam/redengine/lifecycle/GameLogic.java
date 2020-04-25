@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket.engine.lifecycle;
+package com.github.incognitojam.redengine.lifecycle;
 
 public interface GameLogic {
     void init() throws Exception;

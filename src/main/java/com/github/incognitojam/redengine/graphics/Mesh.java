@@ -1,8 +1,8 @@
-package com.github.incognitojam.redpacket.engine.graphics;
+package com.github.incognitojam.redengine.graphics;
 
-import com.github.incognitojam.redpacket.engine.graphics.array.VertexArray;
-import com.github.incognitojam.redpacket.engine.graphics.buffer.FloatArrayBuffer;
-import com.github.incognitojam.redpacket.engine.graphics.buffer.IntArrayBuffer;
+import com.github.incognitojam.redengine.graphics.array.VertexArray;
+import com.github.incognitojam.redengine.graphics.buffer.FloatArrayBuffer;
+import com.github.incognitojam.redengine.graphics.buffer.IntArrayBuffer;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;

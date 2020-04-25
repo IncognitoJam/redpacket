@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket.engine.graphics.buffer;
+package com.github.incognitojam.redengine.graphics.buffer;
 
 import static org.lwjgl.opengl.GL15.*;
 

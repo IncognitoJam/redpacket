@@ -1,10 +1,10 @@
 package com.github.incognitojam.redpacket;
 
-import com.github.incognitojam.redpacket.engine.graphics.Camera;
-import com.github.incognitojam.redpacket.engine.graphics.Mesh;
-import com.github.incognitojam.redpacket.engine.graphics.ShaderProgram;
-import com.github.incognitojam.redpacket.engine.graphics.Window;
-import com.github.incognitojam.redpacket.engine.lifecycle.GameLogic;
+import com.github.incognitojam.redengine.graphics.Camera;
+import com.github.incognitojam.redengine.graphics.Mesh;
+import com.github.incognitojam.redengine.graphics.ShaderProgram;
+import com.github.incognitojam.redengine.graphics.Window;
+import com.github.incognitojam.redengine.lifecycle.GameLogic;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

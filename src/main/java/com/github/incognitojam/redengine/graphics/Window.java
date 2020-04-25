@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket.engine.graphics;
+package com.github.incognitojam.redengine.graphics;
 
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;

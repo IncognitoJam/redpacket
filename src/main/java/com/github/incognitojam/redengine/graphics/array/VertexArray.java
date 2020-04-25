@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket.engine.graphics.array;
+package com.github.incognitojam.redengine.graphics.array;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.github.incognitojam.redpacket.engine.lifecycle;
+package com.github.incognitojam.redengine.lifecycle;
 
-import com.github.incognitojam.redpacket.engine.Timer;
+import com.github.incognitojam.redengine.Timer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import static org.lwjgl.glfw.GLFW.*;

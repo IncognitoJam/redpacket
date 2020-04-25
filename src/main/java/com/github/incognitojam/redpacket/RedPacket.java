@@ -36,22 +36,50 @@ public class RedPacket implements GameLogic {
         camera = new Camera(aspectRatio);
 
         final float[] positions = new float[] {
-            -0.5f, 0.5f, -1.05f,
-            -0.5f, -0.5f, -1.05f,
-            0.5f, -0.5f, -1.05f,
-            0.5f, 0.5f, -1.05f,
+            // 0 (front bottom left)
+            -0.5F, -0.5F, 0.5F,
+            // 1 (front bottom right)
+            0.5F, -0.5F, 0.5F,
+            // 2 (front top right)
+            0.5F, 0.5F, 0.5F,
+            // 3 (front top left)
+            -0.5F, 0.5F, 0.5F,
+            // 4 (back bottom right)
+            0.5F, -0.5F, -0.5F,
+            // 5 (back bottom left)
+            -0.5F, -0.5F, -0.5F,
+            // 6 (back top left)
+            -0.5F, 0.5F, -0.5F,
+            // 7 (back top right)
+            0.5F, 0.5F, -0.5F
+        };
+        final float[] colours = new float[] {
+            0.5F, 0.0F, 0.0F,
+            0.0F, 0.5F, 0.0F,
+            0.0F, 0.0F, 0.5F,
+            0.0F, 0.5F, 0.5F,
+            0.5F, 0.0F, 0.0F,
+            0.0F, 0.5F, 0.0F,
+            0.0F, 0.0F, 0.5F,
+            0.0F, 0.5F, 0.5F
         };
         final int[] indices = new int[] {
-            0, 1, 3, 3, 1, 2,
-        };
-        float[] colours = new float[] {
-            0.5f, 0.0f, 0.0f,
-            0.0f, 0.5f, 0.0f,
-            0.0f, 0.0f, 0.5f,
-            0.0f, 0.5f, 0.5f,
+            // Front
+            0, 1, 2, 2, 3, 0,
+            // Top
+            3, 2, 7, 7, 6, 3,
+            // Right
+            1, 4, 7, 7, 2, 1,
+            // Left
+            5, 0, 3, 3, 6, 5,
+            // Bottom
+            5, 4, 1, 1, 0, 5,
+            // Back
+            4, 5, 6, 6, 7, 4
         };
         Mesh mesh = new Mesh(positions, colours, indices);
         entity = new Entity(mesh);
+        entity.setPosition(0, 0, -2F);
     }
 
     @Override
@@ -64,6 +92,9 @@ public class RedPacket implements GameLogic {
             window.setTitle(String.format("Red Packet: %d FPS", frames));
             frames = 0;
         }
+
+        final float rotation = (float) (entity.getRotation().x + Math.PI * interval);
+        entity.setRotation(rotation, rotation, rotation);
     }
 
     @Override

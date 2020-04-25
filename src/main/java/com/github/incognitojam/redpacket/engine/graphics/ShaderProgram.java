@@ -1,13 +1,20 @@
 package com.github.incognitojam.redpacket.engine.graphics;
 
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
     private final int programId;
     private final List<Integer> shaderIds;
+    private final Map<String, Integer> uniforms;
 
     public ShaderProgram() throws Exception {
         programId = glCreateProgram();
@@ -15,6 +22,7 @@ public class ShaderProgram {
             throw new Exception("Could not create shader program");
         }
         shaderIds = new ArrayList<>();
+        uniforms = new HashMap<>();
     }
 
     public void addVertexShader(String shaderCode) throws Exception {
@@ -58,6 +66,27 @@ public class ShaderProgram {
         if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
             final String infoLog = glGetProgramInfoLog(programId, 1024);
             System.err.println("Warning validating shader code: " + infoLog);
+        }
+    }
+
+    public void createUniform(String uniformName) throws Exception {
+        final int uniformLocation = glGetUniformLocation(programId, uniformName);
+        if (uniformLocation < 0) {
+            throw new Exception("Could not find uniform: " + uniformName);
+        }
+        uniforms.put(uniformName, uniformLocation);
+    }
+
+    public void setUniform(String uniformName, float value) {
+        glUniform1f(uniforms.get(uniformName), value);
+    }
+
+    public void setUniform(String uniformName, Matrix4f value) {
+        // Dump the matrix into a float buffer
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(16);
+            value.get(buffer);
+            glUniformMatrix4fv(uniforms.get(uniformName), false, buffer);
         }
     }
 

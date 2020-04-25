@@ -1,5 +1,6 @@
 package com.github.incognitojam.redpacket;
 
+import com.github.incognitojam.redpacket.engine.graphics.Camera;
 import com.github.incognitojam.redpacket.engine.graphics.Mesh;
 import com.github.incognitojam.redpacket.engine.graphics.ShaderProgram;
 import com.github.incognitojam.redpacket.engine.graphics.Window;
@@ -13,6 +14,7 @@ import static org.lwjgl.opengl.GL11.glViewport;
 public class RedPacket implements GameLogic {
     private Window window;
     private ShaderProgram shader;
+    private Camera camera;
     private Mesh mesh;
 
     private int frames;
@@ -20,18 +22,23 @@ public class RedPacket implements GameLogic {
 
     @Override
     public void init() throws Exception {
-        window = new Window("Red Packet", 600, 300, true);
+        window = new Window("Red Packet", 600, 300, false);
 
         shader = new ShaderProgram();
         shader.addVertexShader(Files.readString(Paths.get("basic.vert")));
         shader.addFragmentShader(Files.readString(Paths.get("basic.frag")));
         shader.link();
 
+        shader.createUniform("projectionMatrix");
+
+        final float aspectRatio = (float) window.getWidth() / (float) window.getHeight();
+        camera = new Camera(aspectRatio);
+
         final float[] positions = new float[] {
-            -0.5f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f,
+            -0.5f, 0.5f, -1.05f,
+            -0.5f, -0.5f, -1.05f,
+            0.5f, -0.5f, -1.05f,
+            0.5f, 0.5f, -1.05f,
         };
         final int[] indices = new int[] {
             0, 1, 3, 3, 1, 2,
@@ -67,6 +74,7 @@ public class RedPacket implements GameLogic {
         }
 
         shader.bind();
+        shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
 
         mesh.bind();
         mesh.draw();

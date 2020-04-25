@@ -15,7 +15,7 @@ public class RedPacket implements GameLogic {
     private Window window;
     private ShaderProgram shader;
     private Camera camera;
-    private Mesh mesh;
+    private Entity entity;
 
     private int frames;
     private long frameTime;
@@ -30,6 +30,7 @@ public class RedPacket implements GameLogic {
         shader.link();
 
         shader.createUniform("projectionMatrix");
+        shader.createUniform("worldMatrix");
 
         final float aspectRatio = (float) window.getWidth() / (float) window.getHeight();
         camera = new Camera(aspectRatio);
@@ -49,7 +50,8 @@ public class RedPacket implements GameLogic {
             0.0f, 0.0f, 0.5f,
             0.0f, 0.5f, 0.5f,
         };
-        mesh = new Mesh(positions, colours, indices);
+        Mesh mesh = new Mesh(positions, colours, indices);
+        entity = new Entity(mesh);
     }
 
     @Override
@@ -76,9 +78,10 @@ public class RedPacket implements GameLogic {
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
 
-        mesh.bind();
-        mesh.draw();
-        mesh.unbind();
+        shader.setUniform("worldMatrix", entity.getWorldMatrix());
+        entity.getMesh().bind();
+        entity.getMesh().draw();
+        entity.getMesh().unbind();
 
         shader.unbind();
 
@@ -89,7 +92,7 @@ public class RedPacket implements GameLogic {
 
     @Override
     public void destroy() {
-        mesh.destroy();
+        entity.getMesh().destroy();
 
         if (shader != null) {
             shader.destroy();

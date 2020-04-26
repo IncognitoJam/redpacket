@@ -20,16 +20,16 @@ public class Camera {
         viewMatrix = new Matrix4f();
     }
 
-    public void move(float offsetX, float offsetY, float offsetZ) {
-        if (offsetZ != 0) {
-            position.x += (float) Math.sin(rotation.y - 90) * -offsetX;
-            position.z += (float) Math.cos(rotation.y - 90) * offsetX;
+    public void move(Vector3f movement) {
+        if (movement.x != 0) {
+            position.x += (float) Math.sin(rotation.y - 90) * -movement.x;
+            position.z += (float) Math.cos(rotation.y - 90) * movement.x;
         }
-        if (offsetX != 0) {
-            position.x += (float) Math.sin(rotation.y) * -offsetZ;
-            position.z += (float) Math.cos(rotation.y) * offsetZ;
+        if (movement.z != 0) {
+            position.x += (float) Math.sin(rotation.y) * -movement.z;
+            position.z += (float) Math.cos(rotation.y) * movement.z;
         }
-        position.y += offsetY;
+        position.y += movement.y;
     }
 
     public Vector3f getPosition() {
@@ -46,6 +46,10 @@ public class Camera {
 
     public void setRotation(float x, float y, float z) {
         this.rotation.set(x, y, z);
+    }
+
+    public void rotate(float dx, float dy, float dz) {
+        rotation.add(dx, dy, dz);
     }
 
     public Matrix4f getProjectionMatrix() {

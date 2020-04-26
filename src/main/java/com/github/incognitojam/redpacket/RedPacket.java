@@ -2,18 +2,29 @@ package com.github.incognitojam.redpacket;
 
 import com.github.incognitojam.redengine.graphics.*;
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
+import com.github.incognitojam.redengine.ui.MouseInput;
+import com.github.incognitojam.redengine.ui.Window;
+import org.joml.Matrix4f;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glViewport;
 
 public class RedPacket implements GameLogic {
     private Window window;
     private ShaderProgram shader;
     private Camera camera;
-    private Entity entity;
+    private MouseInput mouseInput;
 
+    private Entity entity;
+    private Matrix4f modelViewMatrix;
+
+    // FPS counter
     private int frames;
     private long frameTime;
 
@@ -27,12 +38,13 @@ public class RedPacket implements GameLogic {
         shader.link();
 
         shader.createUniform("projectionMatrix");
-        shader.createUniform("viewMatrix");
-        shader.createUniform("worldMatrix");
+        shader.createUniform("modelViewMatrix");
         shader.createUniform("textureSampler");
 
         final float aspectRatio = (float) window.getWidth() / (float) window.getHeight();
         camera = new Camera(aspectRatio);
+        mouseInput = new MouseInput();
+        mouseInput.init(window);
 
         final float[] positions = new float[] {
             // 0 (front bottom left)
@@ -80,11 +92,40 @@ public class RedPacket implements GameLogic {
         Mesh mesh = new Mesh(positions, texCoords, indices, texture);
         entity = new Entity(mesh);
         entity.setPosition(0, 0, -2F);
+        modelViewMatrix = new Matrix4f();
     }
 
     @Override
     public void update(double interval) {
         window.update();
+        mouseInput.update(window);
+
+        if (mouseInput.isRightButton()) {
+            final Vector2f displacement = mouseInput.getDisplacement();
+            camera.rotate(displacement.x * (float) interval, displacement.y * (float) interval, 0);
+        }
+
+        final Vector3f movement = new Vector3f();
+        if (window.isKeyPressed(GLFW_KEY_W)) {
+            movement.z -= 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_S)) {
+            movement.z += 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_A)) {
+            movement.x -= 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_D)) {
+            movement.x += 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_SPACE)) {
+            movement.y += 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            movement.y -= 1;
+        }
+        movement.mul((float) interval);
+        camera.move(movement);
 
         final long now = System.currentTimeMillis();
         if (frameTime < now - 1000L) {
@@ -108,10 +149,11 @@ public class RedPacket implements GameLogic {
 
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
-        shader.setUniform("viewMatrix", camera.getViewMatrix());
         shader.setUniform("textureSampler", 0);
 
-        shader.setUniform("worldMatrix", entity.getWorldMatrix());
+        camera.getViewMatrix().get(modelViewMatrix);
+        modelViewMatrix.mul(entity.getWorldMatrix());
+        shader.setUniform("modelViewMatrix", modelViewMatrix);
         entity.getMesh().bind();
         entity.getMesh().draw();
         entity.getMesh().unbind();

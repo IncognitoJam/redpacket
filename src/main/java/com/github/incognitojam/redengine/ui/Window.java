@@ -1,4 +1,4 @@
-package com.github.incognitojam.redengine.graphics;
+package com.github.incognitojam.redengine.ui;
 
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -164,5 +164,9 @@ public class Window {
 
     public void setResized(boolean resized) {
         this.resized = resized;
+    }
+
+    public long getHandle() {
+        return handle;
     }
 }

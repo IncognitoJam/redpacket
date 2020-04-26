@@ -5,7 +5,6 @@ import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.MouseInput;
 import com.github.incognitojam.redengine.ui.Window;
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -24,13 +23,14 @@ public class RedPacket implements GameLogic {
     private Entity entity;
     private Matrix4f modelViewMatrix;
 
-    // FPS counter
+    // FPS and UPS counter
     private int frames;
-    private long frameTime;
+    private int updates;
+    private long counterTime;
 
     @Override
     public void init() throws Exception {
-        window = new Window("Red Packet", 600, 300, false);
+        window = new Window("Red Packet", 600, 300, true);
 
         shader = new ShaderProgram();
         shader.addVertexShader(Files.readString(Paths.get("shaders/basic.vert")));
@@ -127,11 +127,14 @@ public class RedPacket implements GameLogic {
         movement.mul((float) interval);
         camera.move(movement);
 
+        updates++;
+
         final long now = System.currentTimeMillis();
-        if (frameTime < now - 1000L) {
-            frameTime = now;
-            window.setTitle(String.format("Red Packet: %d FPS", frames));
+        if (counterTime < now - 1000L) {
+            counterTime = now;
+            window.setTitle(String.format("Red Packet: %d FPS, %d UPS", frames, updates));
             frames = 0;
+            updates = 0;
         }
 
         final float rotation = (float) (entity.getRotation().x + Math.PI * interval);

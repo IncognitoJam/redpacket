@@ -14,15 +14,17 @@ import static org.lwjgl.opengl.GL15.*;
 public class Mesh {
     private final VertexArray vao;
     private final FloatArrayBuffer positionsVbo;
-    private final FloatArrayBuffer coloursVbo;
+    private final FloatArrayBuffer texCoordsVbo;
     private final IntArrayBuffer indicesVbo;
+    private final Texture texture;
     private final int vertexCount;
 
-    public Mesh(float[] positions, float[] colours, int[] indices) {
+    public Mesh(float[] positions, float[] texCoords, int[] indices, Texture texture) {
+        this.texture = texture;
         vertexCount = indices.length;
 
         FloatBuffer positionsBuffer = null;
-        FloatBuffer coloursBuffer = null;
+        FloatBuffer texCoordsBuffer = null;
         IntBuffer indicesBuffer = null;
         try {
             vao = new VertexArray();
@@ -36,13 +38,13 @@ public class Mesh {
             vao.attrib(0, 3, GL_FLOAT, false, 0, 0);
             positionsVbo.unbind();
 
-            coloursVbo = new FloatArrayBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
-            coloursBuffer = MemoryUtil.memAllocFloat(colours.length);
-            coloursBuffer.put(colours).flip();
-            coloursVbo.bind();
-            coloursVbo.upload(coloursBuffer);
-            vao.attrib(1, 3, GL_FLOAT, false, 0, 0);
-            coloursVbo.unbind();
+            texCoordsVbo = new FloatArrayBuffer(GL_ARRAY_BUFFER, GL_STATIC_DRAW);
+            texCoordsBuffer = MemoryUtil.memAllocFloat(texCoords.length);
+            texCoordsBuffer.put(texCoords).flip();
+            texCoordsVbo.bind();
+            texCoordsVbo.upload(texCoordsBuffer);
+            vao.attrib(1, 2, GL_FLOAT, false, 0, 0);
+            texCoordsVbo.unbind();
 
             indicesVbo = new IntArrayBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW);
             indicesBuffer = MemoryUtil.memAllocInt(indices.length);
@@ -56,8 +58,8 @@ public class Mesh {
             if (positionsBuffer != null) {
                 MemoryUtil.memFree(positionsBuffer);
             }
-            if (coloursBuffer != null) {
-                MemoryUtil.memFree(coloursBuffer);
+            if (texCoordsBuffer != null) {
+                MemoryUtil.memFree(texCoordsBuffer);
             }
             if (indicesBuffer != null) {
                 MemoryUtil.memFree(indicesBuffer);
@@ -70,9 +72,10 @@ public class Mesh {
     }
 
     public void bind() {
+        texture.bind();
         vao.bind();
         positionsVbo.bind();
-        coloursVbo.bind();
+        texCoordsVbo.bind();
         indicesVbo.bind();
         vao.enable();
     }
@@ -84,15 +87,16 @@ public class Mesh {
     public void unbind() {
         vao.disable();
         positionsVbo.unbind();
-        coloursVbo.unbind();
+        texCoordsVbo.unbind();
         indicesVbo.unbind();
         vao.unbind();
+        texture.unbind();
     }
 
     public void destroy() {
         vao.disable();
         positionsVbo.destroy();
-        coloursVbo.destroy();
+        texCoordsVbo.destroy();
         indicesVbo.destroy();
         vao.destroy();
     }

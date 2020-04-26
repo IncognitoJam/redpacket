@@ -1,9 +1,6 @@
 package com.github.incognitojam.redpacket;
 
-import com.github.incognitojam.redengine.graphics.Camera;
-import com.github.incognitojam.redengine.graphics.Mesh;
-import com.github.incognitojam.redengine.graphics.ShaderProgram;
-import com.github.incognitojam.redengine.graphics.Window;
+import com.github.incognitojam.redengine.graphics.*;
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
 
 import java.nio.file.Files;
@@ -25,12 +22,13 @@ public class RedPacket implements GameLogic {
         window = new Window("Red Packet", 600, 300, false);
 
         shader = new ShaderProgram();
-        shader.addVertexShader(Files.readString(Paths.get("basic.vert")));
-        shader.addFragmentShader(Files.readString(Paths.get("basic.frag")));
+        shader.addVertexShader(Files.readString(Paths.get("shaders/basic.vert")));
+        shader.addFragmentShader(Files.readString(Paths.get("shaders/basic.frag")));
         shader.link();
 
         shader.createUniform("projectionMatrix");
         shader.createUniform("worldMatrix");
+        shader.createUniform("textureSampler");
 
         final float aspectRatio = (float) window.getWidth() / (float) window.getHeight();
         camera = new Camera(aspectRatio);
@@ -53,15 +51,15 @@ public class RedPacket implements GameLogic {
             // 7 (back top right)
             0.5F, 0.5F, -0.5F
         };
-        final float[] colours = new float[] {
-            0.5F, 0.0F, 0.0F,
-            0.0F, 0.5F, 0.0F,
-            0.0F, 0.0F, 0.5F,
-            0.0F, 0.5F, 0.5F,
-            0.5F, 0.0F, 0.0F,
-            0.0F, 0.5F, 0.0F,
-            0.0F, 0.0F, 0.5F,
-            0.0F, 0.5F, 0.5F
+        final float[] texCoords = new float[] {
+            0.0F, 0.5F,
+            0.5F, 0.5F,
+            0.5F, 0.0F,
+            0.0F, 0.0F,
+            0.0F, 0.5F,
+            0.5F, 0.5F,
+            0.5F, 0.0F,
+            0.0F, 0.0F
         };
         final int[] indices = new int[] {
             // Front
@@ -77,7 +75,8 @@ public class RedPacket implements GameLogic {
             // Back
             4, 5, 6, 6, 7, 4
         };
-        Mesh mesh = new Mesh(positions, colours, indices);
+        Texture texture = new Texture("textures/grass.png");
+        Mesh mesh = new Mesh(positions, texCoords, indices, texture);
         entity = new Entity(mesh);
         entity.setPosition(0, 0, -2F);
     }
@@ -108,6 +107,7 @@ public class RedPacket implements GameLogic {
 
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
+        shader.setUniform("textureSampler", 0);
 
         shader.setUniform("worldMatrix", entity.getWorldMatrix());
         entity.getMesh().bind();

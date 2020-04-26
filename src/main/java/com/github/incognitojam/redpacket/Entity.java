@@ -51,9 +51,9 @@ public class Entity {
         return worldMatrix
             .identity()
             .translate(position)
-            .rotateX(rotation.x)
-            .rotateY(rotation.y)
-            .rotateZ(rotation.z)
+            .rotateX(-rotation.x)
+            .rotateY(-rotation.y)
+            .rotateZ(-rotation.z)
             .scale(scale);
     }
 }

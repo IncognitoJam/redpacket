@@ -27,6 +27,7 @@ public class RedPacket implements GameLogic {
         shader.link();
 
         shader.createUniform("projectionMatrix");
+        shader.createUniform("viewMatrix");
         shader.createUniform("worldMatrix");
         shader.createUniform("textureSampler");
 
@@ -107,6 +108,7 @@ public class RedPacket implements GameLogic {
 
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
+        shader.setUniform("viewMatrix", camera.getViewMatrix());
         shader.setUniform("textureSampler", 0);
 
         shader.setUniform("worldMatrix", entity.getWorldMatrix());

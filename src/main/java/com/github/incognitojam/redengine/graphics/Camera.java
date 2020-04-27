@@ -22,8 +22,8 @@ public class Camera {
 
     public void move(Vector3f movement) {
         if (movement.x != 0) {
-            position.x += (float) Math.sin(rotation.y - 90) * -movement.x;
-            position.z += (float) Math.cos(rotation.y - 90) * movement.x;
+            position.x += (float) Math.sin(rotation.y - (Math.PI / 2)) * -movement.x;
+            position.z += (float) Math.cos(rotation.y - (Math.PI / 2)) * movement.x;
         }
         if (movement.z != 0) {
             position.x += (float) Math.sin(rotation.y) * -movement.z;

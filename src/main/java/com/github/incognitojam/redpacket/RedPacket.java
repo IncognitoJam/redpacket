@@ -1,20 +1,12 @@
 package com.github.incognitojam.redpacket;
 
 import com.github.incognitojam.redengine.graphics.Camera;
-import com.github.incognitojam.redengine.graphics.ShaderProgram;
-import com.github.incognitojam.redengine.graphics.TextureMap;
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.MouseInput;
 import com.github.incognitojam.redengine.ui.Window;
-import com.github.incognitojam.redpacket.world.Chunk;
 import com.github.incognitojam.redpacket.world.World;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glViewport;

@@ -1,7 +1,5 @@
 package com.github.incognitojam.redengine.graphics;
 
-import java.util.Arrays;
-
 public class TextureMap {
     private final Texture texture;
     private final int size;
@@ -47,7 +45,7 @@ public class TextureMap {
         /*
          * Coordinates of each corner of the texture, counter-clockwise from
          * the bottom left corner.
-        */
+         */
         float[] floats = {
             x * unit, (y + 1) * unit,
             (x + 1) * unit, (y + 1) * unit,

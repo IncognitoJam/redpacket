@@ -2,6 +2,8 @@ package com.github.incognitojam.redpacket.world;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
 import com.github.incognitojam.redengine.graphics.TextureMap;
+import com.github.incognitojam.redpacket.block.Block;
+import com.github.incognitojam.redpacket.block.Blocks;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -13,6 +15,7 @@ public class Chunk {
 
     private final Vector3i position;
     private final Matrix4f worldMatrix;
+    private final String[] blocks;
     private TextureMap textureMap;
 
     private boolean outdatedMesh;
@@ -21,6 +24,7 @@ public class Chunk {
     public Chunk(Vector3i position) {
         this.position = position;
         worldMatrix = new Matrix4f().translate(new Vector3f(position).mul(CHUNK_SIZE));
+        blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
     }
 
     public Vector3i getPosition() {
@@ -33,6 +37,7 @@ public class Chunk {
 
     public void init(TextureMap textureMap) {
         this.textureMap = textureMap;
+        generateBlocks();
         buildMesh();
     }
 
@@ -50,7 +55,25 @@ public class Chunk {
     }
 
     public void destroy() {
-        mesh.destroy();
+        if (mesh != null) {
+            mesh.destroy();
+        }
+    }
+
+    private void generateBlocks() {
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                for (int y = 0; y < CHUNK_SIZE; y++) {
+                    String id;
+                    if (y == CHUNK_SIZE - 1) {
+                        id = "grass";
+                    } else {
+                        id = "dirt";
+                    }
+                    blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = id;
+                }
+            }
+        }
     }
 
     private void buildMesh() {
@@ -59,7 +82,8 @@ public class Chunk {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 for (int y = 0; y < CHUNK_SIZE; y++) {
-                    builder.addBlock(x, y, z);
+                    final Block block = Blocks.getBlock(blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE]);
+                    builder.addBlock(x, y, z, block);
                 }
             }
         }
@@ -84,72 +108,72 @@ public class Chunk {
             vertexCount = 0;
         }
 
-        public void addBlock(int x, int y, int z) {
+        public void addBlock(int x, int y, int z, Block block) {
             final Vector3f position = new Vector3f(x, y, z);
-            addLeftFace(position); // -ve x
-            addRightFace(position); // +ve x
-            addBottomFace(position); // -ve y
-            addTopFace(position); // +ve y
-            addBackFace(position); // -ve z
-            addFrontFace(position); // +ve z
+            addLeftFace(position, block); // -ve x
+            addRightFace(position, block); // +ve x
+            addBottomFace(position, block); // -ve y
+            addTopFace(position, block); // +ve y
+            addBackFace(position, block); // -ve z
+            addFrontFace(position, block); // +ve z
         }
 
-        private void addLeftFace(Vector3f position) {
+        private void addLeftFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(0, 0, 0));
             positions.add(new Vector3f(position).add(0, 0, 1));
             positions.add(new Vector3f(position).add(0, 1, 1));
             positions.add(new Vector3f(position).add(0, 1, 0));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addRightFace(Vector3f position) {
+        private void addRightFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(1, 0, 0));
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
             positions.add(new Vector3f(position).add(1, 1, 0));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addBottomFace(Vector3f position) {
+        private void addBottomFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(0, 0, 1));
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 0, 0));
             positions.add(new Vector3f(position).add(0, 0, 0));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addTopFace(Vector3f position) {
+        private void addTopFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(1, 1, 0));
             positions.add(new Vector3f(position).add(0, 1, 0));
             positions.add(new Vector3f(position).add(0, 1, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addBackFace(Vector3f position) {
+        private void addBackFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(1, 0, 0));
             positions.add(new Vector3f(position).add(0, 0, 0));
             positions.add(new Vector3f(position).add(0, 1, 0));
             positions.add(new Vector3f(position).add(1, 1, 0));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addFrontFace(Vector3f position) {
+        private void addFrontFace(Vector3f position, Block block) {
             positions.add(new Vector3f(position).add(0, 0, 1));
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
             positions.add(new Vector3f(position).add(0, 1, 1));
-            addTextureCoords();
+            addTextureCoords(block);
             addIndices();
         }
 
-        private void addTextureCoords() {
-            final float[] textureCoordinates = textureMap.getTextureCoordinates(0);
+        private void addTextureCoords(Block block) {
+            final float[] textureCoordinates = textureMap.getTextureCoordinates(block.getTextureId());
             for (final float ordinate : textureCoordinates) {
                 textureCoords.add(ordinate);
             }

@@ -7,6 +7,7 @@ import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.MouseInput;
 import com.github.incognitojam.redengine.ui.Window;
 import com.github.incognitojam.redpacket.world.Chunk;
+import com.github.incognitojam.redpacket.world.World;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -20,13 +21,10 @@ import static org.lwjgl.opengl.GL11.glViewport;
 
 public class RedPacket implements GameLogic {
     private Window window;
-    private ShaderProgram shader;
-    private Camera camera;
     private MouseInput mouseInput;
 
-    private TextureMap textureMap;
-    private Chunk chunk;
-    private Matrix4f modelViewMatrix;
+    private World world;
+    private Camera camera;
 
     // FPS and UPS counter
     private int frames;
@@ -36,24 +34,14 @@ public class RedPacket implements GameLogic {
     @Override
     public void init() throws Exception {
         window = new Window("Red Packet", 600, 300, true);
-
-        shader = new ShaderProgram();
-        shader.addVertexShader(Files.readString(Paths.get("shaders/basic.vert")));
-        shader.addFragmentShader(Files.readString(Paths.get("shaders/basic.frag")));
-        shader.link();
-
-        shader.createUniform("projectionMatrix");
-        shader.createUniform("modelViewMatrix");
-        shader.createUniform("textureSampler");
-
-        camera = new Camera(window.getWidth(), window.getHeight());
         mouseInput = new MouseInput();
         mouseInput.init(window);
 
-        textureMap = new TextureMap("textures/grass.png", 2);
-        chunk = new Chunk(new Vector3i());
-        chunk.init(textureMap);
-        modelViewMatrix = new Matrix4f();
+        world = new World();
+        world.init();
+
+        camera = new Camera(window.getWidth(), window.getHeight());
+        camera.setPosition(0, 10, 0);
     }
 
     @Override
@@ -61,7 +49,7 @@ public class RedPacket implements GameLogic {
         window.update();
         mouseInput.update(window);
 
-        chunk.update();
+        world.update(interval);
 
         if (mouseInput.isRightButton()) {
             final Vector2f displacement = mouseInput.getDisplacement();
@@ -111,20 +99,7 @@ public class RedPacket implements GameLogic {
             window.setResized(false);
         }
 
-        shader.bind();
-        shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
-        shader.setUniform("textureSampler", 0);
-
-        textureMap.bind();
-
-        camera.getViewMatrix().get(modelViewMatrix);
-        modelViewMatrix.mul(chunk.getWorldMatrix());
-        shader.setUniform("modelViewMatrix", modelViewMatrix);
-        chunk.render();
-
-        textureMap.unbind();
-
-        shader.unbind();
+        world.render(camera);
 
         window.swapBuffers();
 
@@ -133,13 +108,7 @@ public class RedPacket implements GameLogic {
 
     @Override
     public void destroy() {
-        textureMap.destroy();
-        chunk.destroy();
-
-        if (shader != null) {
-            shader.destroy();
-        }
-
+        world.destroy();
         window.destroy();
     }
 

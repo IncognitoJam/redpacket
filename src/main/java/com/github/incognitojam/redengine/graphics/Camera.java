@@ -41,7 +41,7 @@ public class Camera {
     }
 
     public void setPosition(float x, float y, float z) {
-        this.position.set(x, y, z);
+        position.set(x, y, z);
     }
 
     public Vector3f getRotation() {
@@ -49,7 +49,7 @@ public class Camera {
     }
 
     public void setRotation(float x, float y, float z) {
-        this.rotation.set(x, y, z);
+        rotation.set(x, y, z);
     }
 
     public void rotate(float dx, float dy, float dz) {

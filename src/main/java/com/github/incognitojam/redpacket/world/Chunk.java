@@ -41,7 +41,7 @@ public class Chunk {
         buildMesh();
     }
 
-    public void update() {
+    public void update(double interval) {
         if (outdatedMesh) {
             buildMesh();
             outdatedMesh = false;

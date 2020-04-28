@@ -1,4 +1,4 @@
-package com.github.incognitojam.redpacket;
+package com.github.incognitojam.redpacket.entity;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
 import org.joml.Matrix4f;

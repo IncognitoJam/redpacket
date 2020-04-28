@@ -11,9 +11,29 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
     private final int id;
+    private final int width;
+    private final int height;
 
-    public Texture(String filename) throws Exception {
-        id = loadTexture(filename);
+    private Texture(int id, int width, int height) {
+        this.id = id;
+        this.width = width;
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public boolean isPowerOfTwo() {
+        return isPowerOfTwo(width) && isPowerOfTwo(height);
+    }
+
+    private static boolean isPowerOfTwo(int number) {
+        return number > 0 && ((number & (number - 1)) == 0);
     }
 
     public void bind() {
@@ -29,7 +49,7 @@ public class Texture {
         glDeleteTextures(id);
     }
 
-    private static int loadTexture(String filename) throws Exception {
+    public static Texture loadTexture(String filename) throws Exception {
         int width, height;
         ByteBuffer buffer;
 
@@ -67,6 +87,7 @@ public class Texture {
 
         stbi_image_free(buffer);
 
-        return id;
+        // Construct the Texture object
+        return new Texture(id, width, height);
     }
 }

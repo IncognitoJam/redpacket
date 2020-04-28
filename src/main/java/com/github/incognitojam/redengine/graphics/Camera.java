@@ -13,11 +13,15 @@ public class Camera {
     private final Matrix4f projectionMatrix;
     private final Matrix4f viewMatrix;
 
-    public Camera(float aspectRatio) {
+    public Camera(float width, float height) {
         position = new Vector3f();
         rotation = new Vector3f();
-        projectionMatrix = new Matrix4f().perspective(FIELD_OF_VIEW, aspectRatio, Z_NEAR, Z_FAR);
+        projectionMatrix = new Matrix4f().perspective(FIELD_OF_VIEW, width / height, Z_NEAR, Z_FAR);
         viewMatrix = new Matrix4f();
+    }
+
+    public void updateViewport(float width, float height) {
+        projectionMatrix.identity().perspective(FIELD_OF_VIEW, width / height, Z_NEAR, Z_FAR);
     }
 
     public void move(Vector3f movement) {

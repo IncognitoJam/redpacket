@@ -16,11 +16,9 @@ public class Mesh {
     private final FloatArrayBuffer positionsVbo;
     private final FloatArrayBuffer texCoordsVbo;
     private final IntArrayBuffer indicesVbo;
-    private final Texture texture;
     private final int vertexCount;
 
-    public Mesh(float[] positions, float[] texCoords, int[] indices, Texture texture) {
-        this.texture = texture;
+    public Mesh(float[] positions, float[] texCoords, int[] indices) {
         vertexCount = indices.length;
 
         FloatBuffer positionsBuffer = null;
@@ -72,7 +70,6 @@ public class Mesh {
     }
 
     public void bind() {
-        texture.bind();
         vao.bind();
         positionsVbo.bind();
         texCoordsVbo.bind();
@@ -80,7 +77,7 @@ public class Mesh {
         vao.enable();
     }
 
-    public void draw() {
+    public void render() {
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
     }
 
@@ -90,7 +87,6 @@ public class Mesh {
         texCoordsVbo.unbind();
         indicesVbo.unbind();
         vao.unbind();
-        texture.unbind();
     }
 
     public void destroy() {

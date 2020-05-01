@@ -11,5 +11,5 @@ public abstract class Block {
         return id;
     }
 
-    public abstract int getTextureId();
+    public abstract int getTextureId(BlockFace blockFace);
 }

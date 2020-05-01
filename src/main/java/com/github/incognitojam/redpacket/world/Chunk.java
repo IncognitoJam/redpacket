@@ -3,6 +3,7 @@ package com.github.incognitojam.redpacket.world;
 import com.github.incognitojam.redengine.graphics.Mesh;
 import com.github.incognitojam.redengine.graphics.TextureMap;
 import com.github.incognitojam.redpacket.block.Block;
+import com.github.incognitojam.redpacket.block.BlockFace;
 import com.github.incognitojam.redpacket.block.Blocks;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -123,7 +124,7 @@ public class Chunk {
             positions.add(new Vector3f(position).add(0, 0, 1));
             positions.add(new Vector3f(position).add(0, 1, 1));
             positions.add(new Vector3f(position).add(0, 1, 0));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.WEST));
             addIndices();
         }
 
@@ -132,7 +133,7 @@ public class Chunk {
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
             positions.add(new Vector3f(position).add(1, 1, 0));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.EAST));
             addIndices();
         }
 
@@ -141,7 +142,7 @@ public class Chunk {
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 0, 0));
             positions.add(new Vector3f(position).add(0, 0, 0));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.BOTTOM));
             addIndices();
         }
 
@@ -150,7 +151,7 @@ public class Chunk {
             positions.add(new Vector3f(position).add(0, 1, 0));
             positions.add(new Vector3f(position).add(0, 1, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.TOP));
             addIndices();
         }
 
@@ -159,7 +160,7 @@ public class Chunk {
             positions.add(new Vector3f(position).add(0, 0, 0));
             positions.add(new Vector3f(position).add(0, 1, 0));
             positions.add(new Vector3f(position).add(1, 1, 0));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.NORTH));
             addIndices();
         }
 
@@ -168,12 +169,12 @@ public class Chunk {
             positions.add(new Vector3f(position).add(1, 0, 1));
             positions.add(new Vector3f(position).add(1, 1, 1));
             positions.add(new Vector3f(position).add(0, 1, 1));
-            addTextureCoords(block);
+            addTextureCoords(block.getTextureId(BlockFace.SOUTH));
             addIndices();
         }
 
-        private void addTextureCoords(Block block) {
-            final float[] textureCoordinates = textureMap.getTextureCoordinates(block.getTextureId());
+        private void addTextureCoords(int textureId) {
+            final float[] textureCoordinates = textureMap.getTextureCoordinates(textureId);
             for (final float ordinate : textureCoordinates) {
                 textureCoords.add(ordinate);
             }

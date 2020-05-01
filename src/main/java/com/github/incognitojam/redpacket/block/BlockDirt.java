@@ -6,7 +6,7 @@ public class BlockDirt extends Block {
     }
 
     @Override
-    public int getTextureId() {
+    public int getTextureId(BlockFace blockFace) {
         return 1;
     }
 }

@@ -4,6 +4,7 @@ import com.github.incognitojam.redengine.graphics.Camera;
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.MouseInput;
 import com.github.incognitojam.redengine.ui.Window;
+import com.github.incognitojam.redpacket.entity.Player;
 import com.github.incognitojam.redpacket.world.World;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

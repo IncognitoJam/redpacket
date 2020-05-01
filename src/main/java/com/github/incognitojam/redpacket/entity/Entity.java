@@ -5,10 +5,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Entity {
-    private final Mesh mesh;
-    private final Vector3f position;
-    private final Vector3f rotation;
-    private final Vector3f scale;
+    protected final Mesh mesh;
+    protected final Vector3f position;
+    protected final Vector3f rotation;
+    protected final Vector3f scale;
     private final Matrix4f worldMatrix;
 
     public Entity(Mesh mesh) {
@@ -17,6 +17,19 @@ public class Entity {
         rotation = new Vector3f(0, 0, 0);
         scale = new Vector3f(1, 1, 1);
         worldMatrix = new Matrix4f();
+    }
+
+    public void update(double interval) {
+    }
+
+    public void render() {
+        mesh.bind();
+        mesh.render();
+        mesh.unbind();
+    }
+
+    public void destroy() {
+        mesh.destroy();
     }
 
     public Vector3f getPosition() {

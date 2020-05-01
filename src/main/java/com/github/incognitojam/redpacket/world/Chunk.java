@@ -14,16 +14,19 @@ import java.util.ArrayList;
 public class Chunk {
     public static final int CHUNK_SIZE = 8;
 
+    private final World world;
     private final Vector3i position;
     private final Matrix4f worldMatrix;
-    private final String[] blocks;
-    private TextureMap textureMap;
+    private String[] blocks;
 
+    private TextureMap textureMap;
     private boolean outdatedMesh;
     private Mesh mesh;
 
-    public Chunk(Vector3i position) {
+    public Chunk(World world, Vector3i position) {
+        this.world = world;
         this.position = position;
+
         worldMatrix = new Matrix4f().translate(new Vector3f(position).mul(CHUNK_SIZE));
         blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
     }
@@ -38,8 +41,10 @@ public class Chunk {
 
     public void init(TextureMap textureMap) {
         this.textureMap = textureMap;
-        generateBlocks();
-        buildMesh();
+
+        // Use world generator to get default blocks for this chunk.
+        blocks = world.getGenerator().getBlocks(position);
+        outdatedMesh = true;
     }
 
     public void update(double interval) {
@@ -61,30 +66,18 @@ public class Chunk {
         }
     }
 
-    private void generateBlocks() {
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int z = 0; z < CHUNK_SIZE; z++) {
-                for (int y = 0; y < CHUNK_SIZE; y++) {
-                    String id;
-                    if (y == CHUNK_SIZE - 1) {
-                        id = "grass";
-                    } else {
-                        id = "dirt";
-                    }
-                    blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE] = id;
-                }
-            }
-        }
-    }
-
     private void buildMesh() {
         final ChunkMeshBuilder builder = new ChunkMeshBuilder(textureMap);
 
+        int index = 0;
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                for (int y = 0; y < CHUNK_SIZE; y++) {
-                    final Block block = Blocks.getBlock(blocks[x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE]);
-                    builder.addBlock(x, y, z, block);
+                for (int y = 0; y < CHUNK_SIZE; y++, index++) {
+                    final String blockId = blocks[index];
+                    if (!blockId.equals("air")) {
+                        final Block block = Blocks.getBlock(blockId);
+                        builder.addBlock(x, y, z, block);
+                    }
                 }
             }
         }

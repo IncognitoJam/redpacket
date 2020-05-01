@@ -6,6 +6,7 @@ import java.util.Map;
 public class Blocks {
     public static final BlockGrass GRASS;
     public static final BlockDirt DIRT;
+    public static final BlockStone STONE;
 
     private static final Map<String, Block> blockMap;
 
@@ -13,6 +14,7 @@ public class Blocks {
         blockMap = new HashMap<>();
         GRASS = registerBlock(new BlockGrass());
         DIRT = registerBlock(new BlockDirt());
+        STONE = registerBlock(new BlockStone());
     }
 
     private static <T extends Block> T registerBlock(T block) {

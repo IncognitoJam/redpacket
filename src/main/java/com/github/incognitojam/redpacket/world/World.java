@@ -15,13 +15,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class World {
+    private final WorldGenerator generator;
+
     private final TextureMap textureMap;
     private final HashMap<Vector3i, Chunk> chunkMap;
     private final List<Entity> entities;
     private final Matrix4f modelViewMatrix;
     private final ShaderProgram shader;
 
-    public World() throws Exception {
+    public World(WorldGenerator generator) throws Exception {
+        this.generator = generator;
+
         textureMap = new TextureMap("textures/grass.png", 2);
         chunkMap = new HashMap<>();
         modelViewMatrix = new Matrix4f();
@@ -39,6 +43,10 @@ public class World {
         shader.createUniform("projectionMatrix");
         shader.createUniform("modelViewMatrix");
         shader.createUniform("textureSampler");
+    }
+
+    public WorldGenerator getGenerator() {
+        return generator;
     }
 
     public void init() {
@@ -95,7 +103,7 @@ public class World {
         for (int x = -4; x < 4; x++) {
             for (int z = -4; z < 4; z++) {
                 final Vector3i position = new Vector3i(x, 0, z);
-                final Chunk chunk = new Chunk(position);
+                final Chunk chunk = new Chunk(this, position);
                 chunk.init(textureMap);
                 chunkMap.put(position, chunk);
             }

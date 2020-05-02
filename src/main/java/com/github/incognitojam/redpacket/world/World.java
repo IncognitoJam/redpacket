@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
+
 public class World {
     private final WorldGenerator generator;
 
@@ -26,7 +28,7 @@ public class World {
     public World(WorldGenerator generator) throws Exception {
         this.generator = generator;
 
-        textureMap = new TextureMap("textures/grass.png", 2);
+        textureMap = new TextureMap("textures/terrain.png", 16);
         chunkMap = new HashMap<>();
         modelViewMatrix = new Matrix4f();
 
@@ -47,6 +49,32 @@ public class World {
 
     public WorldGenerator getGenerator() {
         return generator;
+    }
+
+    public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
+        final Vector3i position = new Vector3i(chunkX, chunkY, chunkZ);
+        return chunkMap.get(position);
+    }
+
+    public String getBlockId(Vector3i position) {
+        return getBlockId(position.x, position.y, position.z);
+    }
+
+    public String getBlockId(int x, int y, int z) {
+        final int chunkX = Math.floorDiv(x, CHUNK_SIZE);
+        final int chunkY = Math.floorDiv(y, CHUNK_SIZE);
+        final int chunkZ = Math.floorDiv(z, CHUNK_SIZE);
+        final Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
+        if (chunk == null)
+            if (y < 0)
+                return "stone";
+            else
+                return "air";
+
+        final int localX = Math.floorMod(x, CHUNK_SIZE);
+        final int localY = Math.floorMod(y, CHUNK_SIZE);
+        final int localZ = Math.floorMod(z, CHUNK_SIZE);
+        return chunk.getBlockId(localX, localY, localZ);
     }
 
     public void init() {

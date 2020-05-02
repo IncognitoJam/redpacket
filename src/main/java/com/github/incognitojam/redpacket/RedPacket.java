@@ -69,6 +69,7 @@ public class RedPacket implements GameLogic {
             movement.y -= 1;
         }
         movement.mul((float) interval);
+        movement.mul(1.5f);
         camera.move(movement);
 
         updates++;

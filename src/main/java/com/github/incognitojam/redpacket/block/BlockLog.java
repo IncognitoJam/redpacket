@@ -1,19 +1,18 @@
 package com.github.incognitojam.redpacket.block;
 
-public class BlockGrass extends Block {
-    protected BlockGrass() {
-        super("grass");
+public class BlockLog extends Block {
+    protected BlockLog() {
+        super("log");
     }
 
     @Override
     public int getTextureId(BlockFace blockFace) {
         switch (blockFace) {
             case TOP:
-                return 2;
             case BOTTOM:
-                return 3;
+                return 8;
             default:
-                return 7;
+                return 6;
         }
     }
 }

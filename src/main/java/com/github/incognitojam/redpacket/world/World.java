@@ -5,6 +5,7 @@ import com.github.incognitojam.redengine.graphics.ShaderProgram;
 import com.github.incognitojam.redengine.graphics.TextureMap;
 import com.github.incognitojam.redpacket.entity.Entity;
 import com.github.incognitojam.redpacket.entity.Player;
+import com.github.incognitojam.redpacket.world.generator.WorldGenerator;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
 
@@ -25,10 +26,10 @@ public class World {
     private final Matrix4f modelViewMatrix;
     private final ShaderProgram shader;
 
-    public World(WorldGenerator generator) throws Exception {
-        this.generator = generator;
+    public World(long seed) throws Exception {
+        generator = new WorldGenerator(seed);
 
-        textureMap = new TextureMap("textures/terrain.png", 16);
+        textureMap = new TextureMap("textures/blocks.png", 16);
         chunkMap = new HashMap<>();
         modelViewMatrix = new Matrix4f();
 
@@ -91,6 +92,19 @@ public class World {
         }
     }
 
+    private void generateChunks() {
+        for (int x = -4; x < 4; x++) {
+            for (int z = -4; z < 4; z++) {
+                for (int y = 0; y < 4; y++) {
+                    final Vector3i position = new Vector3i(x, y, z);
+                    final Chunk chunk = new Chunk(this, position);
+                    chunk.init(textureMap);
+                    chunkMap.put(position, chunk);
+                }
+            }
+        }
+    }
+
     public void render(Camera camera) {
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
@@ -125,16 +139,5 @@ public class World {
 
         shader.destroy();
         textureMap.destroy();
-    }
-
-    private void generateChunks() {
-        for (int x = -4; x < 4; x++) {
-            for (int z = -4; z < 4; z++) {
-                final Vector3i position = new Vector3i(x, 0, z);
-                final Chunk chunk = new Chunk(this, position);
-                chunk.init(textureMap);
-                chunkMap.put(position, chunk);
-            }
-        }
     }
 }

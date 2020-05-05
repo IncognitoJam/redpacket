@@ -4,7 +4,6 @@ import com.github.incognitojam.redengine.graphics.Camera;
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.MouseInput;
 import com.github.incognitojam.redengine.ui.Window;
-import com.github.incognitojam.redpacket.world.RandomWorldGenerator;
 import com.github.incognitojam.redpacket.world.World;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -30,7 +29,7 @@ public class RedPacket implements GameLogic {
         mouseInput = new MouseInput();
         mouseInput.init(window);
 
-        world = new World(new RandomWorldGenerator("hello".hashCode(), 1, 7));
+        world = new World("hello".hashCode());
         world.init();
 
         camera = new Camera(window.getWidth(), window.getHeight());

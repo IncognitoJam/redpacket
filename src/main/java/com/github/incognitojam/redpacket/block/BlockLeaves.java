@@ -1,12 +1,12 @@
 package com.github.incognitojam.redpacket.block;
 
-public class BlockDirt extends Block {
-    protected BlockDirt() {
-        super("dirt");
+public class BlockLeaves extends Block {
+    protected BlockLeaves() {
+        super("leaves");
     }
 
     @Override
     public int getTextureId(BlockFace blockFace) {
-        return 3;
+        return 5;
     }
 }

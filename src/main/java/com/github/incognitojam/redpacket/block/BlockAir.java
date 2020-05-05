@@ -7,6 +7,6 @@ public class BlockAir extends Block {
 
     @Override
     public int getTextureId(BlockFace blockFace) {
-        return 3;
+        return 0;
     }
 }

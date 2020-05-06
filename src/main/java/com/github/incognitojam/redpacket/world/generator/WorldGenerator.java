@@ -2,8 +2,6 @@ package com.github.incognitojam.redpacket.world.generator;
 
 import org.joml.Vector3i;
 
-import java.util.Random;
-
 import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
 
 public class WorldGenerator {
@@ -25,20 +23,37 @@ public class WorldGenerator {
         int index = 0;
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                final double noise = (simplexNoise.eval((chunkOrigin.x + x) / (double) CHUNK_SIZE, (chunkOrigin.z + z) / (double) CHUNK_SIZE) + 1.0) / 2.0;
+                final double noise1 = (simplexNoise.eval(
+                    (chunkOrigin.x + x) / (double) CHUNK_SIZE,
+                    (chunkOrigin.z + z) / (double) CHUNK_SIZE
+                ) + 1.0) / 2.0;
+                final double noise2 = (simplexNoise.eval(
+                    (chunkOrigin.x + x) / (double) (4 * CHUNK_SIZE),
+                    (chunkOrigin.z + z) / (double) (4 * CHUNK_SIZE)
+                ) + 1.0) / 2.0;
+
+                final double noise = 0.25 * noise1 + 0.75 * noise2;
                 final int height = (int) (MIN_HEIGHT + noise * RANGE);
 
                 for (int y = 0; y < CHUNK_SIZE; y++, index++) {
                     final int worldY = chunkOrigin.y + y;
+                    final double stoneNoise = (simplexNoise.eval(
+                        (chunkOrigin.x + x) / (double) CHUNK_SIZE,
+                        (chunkOrigin.y + y) / (double) CHUNK_SIZE,
+                        (chunkOrigin.z + z) / (double) CHUNK_SIZE
+                    ) + 1.0) / 2.0;
+
                     String id;
-                    if (worldY < height - 2) {
+                    if (worldY > height) {
+                        id = "air";
+                    } else if (stoneNoise > 0.75) {
                         id = "stone";
-                    } else if (worldY < height) {
-                        id = "dirt";
                     } else if (worldY == height) {
                         id = "grass";
+                    } else if (worldY >= height - 2) {
+                        id = "dirt";
                     } else {
-                        id = "air";
+                        id = "stone";
                     }
                     blocks[index] = id;
                 }

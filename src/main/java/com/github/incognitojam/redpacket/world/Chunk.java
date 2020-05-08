@@ -16,6 +16,7 @@ public class Chunk {
 
     private final World world;
     private final Vector3i position;
+    private final Vector3i worldPosition;
     private final Matrix4f worldMatrix;
     private String[] blocks;
 
@@ -27,6 +28,7 @@ public class Chunk {
         this.world = world;
         this.position = position;
 
+        worldPosition = new Vector3i(position).mul(CHUNK_SIZE);
         worldMatrix = new Matrix4f().translate(new Vector3f(position).mul(CHUNK_SIZE));
         blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
     }
@@ -40,8 +42,17 @@ public class Chunk {
     }
 
     public String getBlockId(int localX, int localY, int localZ) {
-        if (localX < 0 || localX >= CHUNK_SIZE || localY < 0 || localY >= CHUNK_SIZE || localZ < 0 || localZ >= CHUNK_SIZE)
-            return world.getBlockId(position.x * CHUNK_SIZE + localX, position.y * CHUNK_SIZE + localY, position.z * CHUNK_SIZE + localZ);
+        if (localX < 0 || localX >= CHUNK_SIZE ||
+            localY < 0 || localY >= CHUNK_SIZE ||
+            localZ < 0 || localZ >= CHUNK_SIZE) {
+
+            return world.getBlockId(
+                worldPosition.x + localX,
+                worldPosition.y + localY,
+                worldPosition.z + localZ
+            );
+        }
+
         return blocks[localX * CHUNK_SIZE * CHUNK_SIZE + localZ * CHUNK_SIZE + localY];
     }
 
@@ -120,22 +131,22 @@ public class Chunk {
                          * which would obscure the face from view.
                          */
                         if (optimiseMesh) {
-                            if (getBlockId(x - 1, y, z).equals("air")) {
+                            if ("air".equals(getBlockId(x - 1, y, z))) {
                                 addWestFace(position, block); // -ve x
                             }
-                            if (getBlockId(x + 1, y, z).equals("air")) {
+                            if ("air".equals(getBlockId(x + 1, y, z))) {
                                 addEastFace(position, block); // +ve x
                             }
-                            if (getBlockId(x, y - 1, z).equals("air")) {
+                            if ("air".equals(getBlockId(x, y - 1, z))) {
                                 addBottomFace(position, block); // -ve y
                             }
-                            if (getBlockId(x, y + 1, z).equals("air")) {
+                            if ("air".equals(getBlockId(x, y + 1, z))) {
                                 addTopFace(position, block); // +ve y
                             }
-                            if (getBlockId(x, y, z - 1).equals("air")) {
+                            if ("air".equals(getBlockId(x, y, z - 1))) {
                                 addNorthFace(position, block); // -ve z
                             }
-                            if (getBlockId(x, y, z + 1).equals("air")) {
+                            if ("air".equals(getBlockId(x, y, z + 1))) {
                                 addSouthFace(position, block); // +ve z
                             }
                         } else {

@@ -65,16 +65,16 @@ public class World {
         final int chunkX = Math.floorDiv(x, CHUNK_SIZE);
         final int chunkY = Math.floorDiv(y, CHUNK_SIZE);
         final int chunkZ = Math.floorDiv(z, CHUNK_SIZE);
+
         final Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
-        if (chunk == null)
-            if (y < 0)
-                return "stone";
-            else
-                return "air";
+        if (chunk == null) {
+            return null;
+        }
 
         final int localX = Math.floorMod(x, CHUNK_SIZE);
         final int localY = Math.floorMod(y, CHUNK_SIZE);
         final int localZ = Math.floorMod(z, CHUNK_SIZE);
+
         return chunk.getBlockId(localX, localY, localZ);
     }
 
@@ -93,8 +93,8 @@ public class World {
     }
 
     private void generateChunks() {
-        for (int x = -4; x < 4; x++) {
-            for (int z = -4; z < 4; z++) {
+        for (int x = -6; x < 6; x++) {
+            for (int z = -6; z < 6; z++) {
                 for (int y = 0; y < 4; y++) {
                     final Vector3i position = new Vector3i(x, y, z);
                     final Chunk chunk = new Chunk(this, position);

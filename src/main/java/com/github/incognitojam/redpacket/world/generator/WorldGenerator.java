@@ -17,7 +17,7 @@ public class WorldGenerator {
     }
 
     public String[] getBlocks(Vector3i chunkPosition) {
-        final Vector3i chunkOrigin = chunkPosition.mul(CHUNK_SIZE);
+        final Vector3i chunkOrigin = new Vector3i(chunkPosition).mul(CHUNK_SIZE);
         final String[] blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
 
         int index = 0;

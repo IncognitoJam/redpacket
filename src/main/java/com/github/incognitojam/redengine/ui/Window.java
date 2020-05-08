@@ -17,15 +17,17 @@ public class Window {
     private int width;
     private int height;
     private boolean vSync;
+    private boolean cullFace;
 
     private boolean resized;
     private final long handle;
 
-    public Window(String title, int width, int height, boolean vSync) {
+    public Window(String title, int width, int height, boolean vSync, boolean cullFace) {
         this.title = title;
         this.width = width;
         this.height = height;
         this.vSync = vSync;
+        this.cullFace = cullFace;
 
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -90,7 +92,7 @@ public class Window {
         GL.createCapabilities();
 
         glEnable(GL_DEPTH_TEST);
-        // glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
     }
 
     public void update() {
@@ -157,6 +159,19 @@ public class Window {
     public void setvSync(boolean vSync) {
         this.vSync = vSync;
         glfwSwapInterval(vSync ? 1 : 0);
+    }
+
+    public boolean isCullFaceEnabled() {
+        return cullFace;
+    }
+
+    public void setCullFace(boolean cullFace) {
+        this.cullFace = cullFace;
+        if (cullFace) {
+            glEnable(GL_CULL_FACE);
+        } else {
+            glDisable(GL_CULL_FACE);
+        }
     }
 
     public boolean isResized() {

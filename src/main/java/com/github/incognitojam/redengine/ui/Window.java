@@ -90,6 +90,7 @@ public class Window {
         GL.createCapabilities();
 
         glEnable(GL_DEPTH_TEST);
+        // glEnable(GL_CULL_FACE);
     }
 
     public void update() {

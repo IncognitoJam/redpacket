@@ -186,10 +186,10 @@ public class Chunk {
         }
 
         private void addEastFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(1, 0, 0));
             positions.add(new Vector3i(position).add(1, 0, 1));
-            positions.add(new Vector3i(position).add(1, 1, 1));
+            positions.add(new Vector3i(position).add(1, 0, 0));
             positions.add(new Vector3i(position).add(1, 1, 0));
+            positions.add(new Vector3i(position).add(1, 1, 1));
             addTextureCoords(block.getTextureId(BlockFace.EAST));
             addIndices();
         }

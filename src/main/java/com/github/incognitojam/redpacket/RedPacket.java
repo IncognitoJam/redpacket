@@ -25,7 +25,7 @@ public class RedPacket implements GameLogic {
 
     @Override
     public void init() throws Exception {
-        window = new Window("Red Packet", 600, 300, true);
+        window = new Window("Red Packet", 1280, 720, false);
         mouseInput = new MouseInput();
         mouseInput.init(window);
 

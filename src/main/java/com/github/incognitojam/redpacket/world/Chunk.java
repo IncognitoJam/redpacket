@@ -81,6 +81,10 @@ public class Chunk {
         }
     }
 
+    public void setOutdatedMesh(boolean outdatedMesh) {
+        this.outdatedMesh = outdatedMesh;
+    }
+
     private void buildMesh() {
         mesh = new ChunkMeshBuilder()
             .setOptimiseMesh(true)

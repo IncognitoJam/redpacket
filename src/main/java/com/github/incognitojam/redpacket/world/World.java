@@ -16,23 +16,27 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedTransferQueue;
 
 import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
 
 public class World {
     private final WorldGenerator generator;
+    private final HashMap<Vector3ic, Chunk> chunkMap;
+    private final Queue<Vector3ic> chunkQueue;
 
     private final TextureMap textureMap;
-    private final HashMap<Vector3ic, Chunk> chunkMap;
     private final List<Entity> entities;
     private final Matrix4f modelViewMatrix;
     private final ShaderProgram shader;
 
     public World(long seed) throws Exception {
         generator = new WorldGenerator(seed);
+        chunkMap = new HashMap<>();
+        chunkQueue = new LinkedTransferQueue<>();
 
         textureMap = new TextureMap("textures/blocks.png", 16);
-        chunkMap = new HashMap<>();
         modelViewMatrix = new Matrix4f();
 
         entities = new ArrayList<>();
@@ -59,10 +63,19 @@ public class World {
     }
 
     public String getBlockId(Vector3ic position) {
+        if (position.y() < 0) {
+            /*
+             * FIXME: I return null to avoid generating faces for the bottom of
+             *  the world since faces are only added to chunk meshes when they
+             *  border air blocks. This needs a better solution.
+             */
+            return null;
+        }
+
         final Vector3ic chunkPosition = VectorUtils.floorDiv(position, CHUNK_SIZE);
         final Chunk chunk = getChunk(chunkPosition);
         if (chunk == null) {
-            return null;
+            return "air";
         }
 
         final Vector3ic localPosition = VectorUtils.floorMod(position, CHUNK_SIZE);
@@ -70,29 +83,64 @@ public class World {
     }
 
     public void init() {
-        generateChunks();
+        for (int x = -10; x < 10; x++) {
+            for (int z = -10; z < 10; z++) {
+                for (int y = 0; y < 4; y++) {
+                    chunkQueue.add(new Vector3i(x, y, z));
+                }
+            }
+        }
     }
 
     public void update(double interval) {
+        /*
+         * Generate new chunks for about 5 milliseconds.
+         */
+        final long startTime = System.currentTimeMillis();
+        do {
+            // Check the queue for new chunks to generate.
+            final Vector3ic position = chunkQueue.poll();
+            if (position == null) {
+                // No elements in the queue, abort.
+                break;
+            }
+
+            // Create the new chunk object and add it to the chunk map.
+            final Chunk chunk = new Chunk(this, position);
+            chunk.init(textureMap);
+            chunkMap.put(position, chunk);
+
+            /*
+             * Force neighbouring chunks to update their meshes, removing
+             * redundant faces.
+             */
+            final Vector3ic[] neighbourPositions = {
+                position.add(-1, 0, 0, new Vector3i()),
+                position.add(1, 0, 0, new Vector3i()),
+                position.add(0, -1, 0, new Vector3i()),
+                position.add(0, 1, 0, new Vector3i()),
+                position.add(0, 0, -1, new Vector3i()),
+                position.add(0, 0, 1, new Vector3i()),
+            };
+            for (final Vector3ic neighbourPosition : neighbourPositions) {
+                final Chunk neighbourChunk = chunkMap.get(neighbourPosition);
+
+                /*
+                 * The neighbouring chunk might not have been generated
+                 * yet, so check for null values.
+                 */
+                if (neighbourChunk != null) {
+                    neighbourChunk.setOutdatedMesh(true);
+                }
+            }
+        } while (System.currentTimeMillis() < startTime + 1L);
+
         for (final Chunk chunk : chunkMap.values()) {
             chunk.update(interval);
         }
 
         for (final Entity entity : entities) {
             entity.update(interval);
-        }
-    }
-
-    private void generateChunks() {
-        for (int x = -5; x < 5; x++) {
-            for (int z = -5; z < 5; z++) {
-                for (int y = 0; y < 4; y++) {
-                    final Vector3i position = new Vector3i(x, y, z);
-                    final Chunk chunk = new Chunk(this, position);
-                    chunk.init(textureMap);
-                    chunkMap.put(position, chunk);
-                }
-            }
         }
     }
 

@@ -3,11 +3,13 @@ package com.github.incognitojam.redpacket.world;
 import com.github.incognitojam.redengine.graphics.Camera;
 import com.github.incognitojam.redengine.graphics.ShaderProgram;
 import com.github.incognitojam.redengine.graphics.TextureMap;
+import com.github.incognitojam.redengine.maths.VectorUtils;
 import com.github.incognitojam.redpacket.entity.Entity;
 import com.github.incognitojam.redpacket.entity.Player;
 import com.github.incognitojam.redpacket.world.generator.WorldGenerator;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,7 +23,7 @@ public class World {
     private final WorldGenerator generator;
 
     private final TextureMap textureMap;
-    private final HashMap<Vector3i, Chunk> chunkMap;
+    private final HashMap<Vector3ic, Chunk> chunkMap;
     private final List<Entity> entities;
     private final Matrix4f modelViewMatrix;
     private final ShaderProgram shader;
@@ -52,30 +54,19 @@ public class World {
         return generator;
     }
 
-    public Chunk getChunk(int chunkX, int chunkY, int chunkZ) {
-        final Vector3i position = new Vector3i(chunkX, chunkY, chunkZ);
+    public Chunk getChunk(Vector3ic position) {
         return chunkMap.get(position);
     }
 
-    public String getBlockId(Vector3i position) {
-        return getBlockId(position.x, position.y, position.z);
-    }
-
-    public String getBlockId(int x, int y, int z) {
-        final int chunkX = Math.floorDiv(x, CHUNK_SIZE);
-        final int chunkY = Math.floorDiv(y, CHUNK_SIZE);
-        final int chunkZ = Math.floorDiv(z, CHUNK_SIZE);
-
-        final Chunk chunk = getChunk(chunkX, chunkY, chunkZ);
+    public String getBlockId(Vector3ic position) {
+        final Vector3ic chunkPosition = VectorUtils.floorDiv(position, CHUNK_SIZE);
+        final Chunk chunk = getChunk(chunkPosition);
         if (chunk == null) {
             return null;
         }
 
-        final int localX = Math.floorMod(x, CHUNK_SIZE);
-        final int localY = Math.floorMod(y, CHUNK_SIZE);
-        final int localZ = Math.floorMod(z, CHUNK_SIZE);
-
-        return chunk.getBlockId(localX, localY, localZ);
+        final Vector3ic localPosition = VectorUtils.floorMod(position, CHUNK_SIZE);
+        return chunk.getBlockId(localPosition);
     }
 
     public void init() {
@@ -93,8 +84,8 @@ public class World {
     }
 
     private void generateChunks() {
-        for (int x = -6; x < 6; x++) {
-            for (int z = -6; z < 6; z++) {
+        for (int x = -5; x < 5; x++) {
+            for (int z = -5; z < 5; z++) {
                 for (int y = 0; y < 4; y++) {
                     final Vector3i position = new Vector3i(x, y, z);
                     final Chunk chunk = new Chunk(this, position);

@@ -2,12 +2,14 @@ package com.github.incognitojam.redpacket.world;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
 import com.github.incognitojam.redengine.graphics.TextureMap;
+import com.github.incognitojam.redengine.maths.VectorUtils;
 import com.github.incognitojam.redpacket.block.Block;
 import com.github.incognitojam.redpacket.block.BlockFace;
 import com.github.incognitojam.redpacket.block.Blocks;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import java.util.ArrayList;
 
@@ -15,8 +17,8 @@ public class Chunk {
     public static final int CHUNK_SIZE = 8;
 
     private final World world;
-    private final Vector3i position;
-    private final Vector3i worldPosition;
+    private final Vector3ic position;
+    private final Vector3ic worldPosition;
     private final Matrix4f worldMatrix;
     private String[] blocks;
 
@@ -24,7 +26,7 @@ public class Chunk {
     private boolean outdatedMesh;
     private Mesh mesh;
 
-    public Chunk(World world, Vector3i position) {
+    public Chunk(World world, Vector3ic position) {
         this.world = world;
         this.position = position;
 
@@ -33,7 +35,7 @@ public class Chunk {
         blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
     }
 
-    public Vector3i getPosition() {
+    public Vector3ic getPosition() {
         return position;
     }
 
@@ -41,19 +43,15 @@ public class Chunk {
         return worldMatrix;
     }
 
-    public String getBlockId(int localX, int localY, int localZ) {
-        if (localX < 0 || localX >= CHUNK_SIZE ||
-            localY < 0 || localY >= CHUNK_SIZE ||
-            localZ < 0 || localZ >= CHUNK_SIZE) {
+    public String getBlockId(int x, int y, int z) {
+        return getBlockId(new Vector3i(x, y, z));
+    }
 
-            return world.getBlockId(
-                worldPosition.x + localX,
-                worldPosition.y + localY,
-                worldPosition.z + localZ
-            );
+    public String getBlockId(Vector3ic position) {
+        if (VectorUtils.isOutOfBounds(position, 0, CHUNK_SIZE)) {
+            return world.getBlockId(new Vector3i(worldPosition).add(position));
         }
-
-        return blocks[localX * CHUNK_SIZE * CHUNK_SIZE + localZ * CHUNK_SIZE + localY];
+        return blocks[position.x() * CHUNK_SIZE * CHUNK_SIZE + position.z() * CHUNK_SIZE + position.y()];
     }
 
     public void init(TextureMap textureMap) {
@@ -90,7 +88,7 @@ public class Chunk {
     }
 
     private class ChunkMeshBuilder {
-        private final ArrayList<Vector3i> positions;
+        private final ArrayList<Vector3ic> positions;
         private final ArrayList<Float> textureCoords;
         private final ArrayList<Integer> indices;
 
@@ -123,7 +121,6 @@ public class Chunk {
                             continue;
 
                         final Block block = Blocks.getBlock(blockId);
-                        final Vector3i position = new Vector3i(x, y, z);
 
                         /*
                          * If optimize mesh is enabled, we should only add the
@@ -132,30 +129,30 @@ public class Chunk {
                          */
                         if (optimiseMesh) {
                             if ("air".equals(getBlockId(x - 1, y, z))) {
-                                addWestFace(position, block); // -ve x
+                                addWestFace(x, y, z, block); // -ve x
                             }
                             if ("air".equals(getBlockId(x + 1, y, z))) {
-                                addEastFace(position, block); // +ve x
+                                addEastFace(x, y, z, block); // +ve x
                             }
                             if ("air".equals(getBlockId(x, y - 1, z))) {
-                                addBottomFace(position, block); // -ve y
+                                addBottomFace(x, y, z, block); // -ve y
                             }
                             if ("air".equals(getBlockId(x, y + 1, z))) {
-                                addTopFace(position, block); // +ve y
+                                addTopFace(x, y, z, block); // +ve y
                             }
                             if ("air".equals(getBlockId(x, y, z - 1))) {
-                                addNorthFace(position, block); // -ve z
+                                addNorthFace(x, y, z, block); // -ve z
                             }
                             if ("air".equals(getBlockId(x, y, z + 1))) {
-                                addSouthFace(position, block); // +ve z
+                                addSouthFace(x, y, z, block); // +ve z
                             }
                         } else {
-                            addWestFace(position, block); // -ve x
-                            addEastFace(position, block); // +ve x
-                            addBottomFace(position, block); // -ve y
-                            addTopFace(position, block); // +ve y
-                            addNorthFace(position, block); // -ve z
-                            addSouthFace(position, block); // +ve z
+                            addWestFace(x, y, z, block); // -ve x
+                            addEastFace(x, y, z, block); // +ve x
+                            addBottomFace(x, y, z, block); // -ve y
+                            addTopFace(x, y, z, block); // +ve y
+                            addNorthFace(x, y, z, block); // -ve z
+                            addSouthFace(x, y, z, block); // +ve z
                         }
                     }
                 }
@@ -164,10 +161,10 @@ public class Chunk {
             // Convert lists of vertex positions to array for float buffer.
             final float[] positionsArray = new float[positions.size() * 3];
             for (int i = 0; i < positions.size(); i++) {
-                final Vector3i position = positions.get(i);
-                positionsArray[i * 3 + 0] = position.x;
-                positionsArray[i * 3 + 1] = position.y;
-                positionsArray[i * 3 + 2] = position.z;
+                final Vector3ic position = positions.get(i);
+                positionsArray[i * 3 + 0] = position.x();
+                positionsArray[i * 3 + 1] = position.y();
+                positionsArray[i * 3 + 2] = position.z();
             }
 
             final float[] textureCoordsArray = new float[textureCoords.size()];
@@ -187,56 +184,56 @@ public class Chunk {
             );
         }
 
-        private void addWestFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(0, 0, 0));
-            positions.add(new Vector3i(position).add(0, 0, 1));
-            positions.add(new Vector3i(position).add(0, 1, 1));
-            positions.add(new Vector3i(position).add(0, 1, 0));
+        private void addWestFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x, y, z));
+            positions.add(new Vector3i(x, y, z + 1));
+            positions.add(new Vector3i(x, y + 1, z + 1));
+            positions.add(new Vector3i(x, y + 1, z));
             addTextureCoords(block.getTextureId(BlockFace.WEST));
             addIndices();
         }
 
-        private void addEastFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(1, 0, 1));
-            positions.add(new Vector3i(position).add(1, 0, 0));
-            positions.add(new Vector3i(position).add(1, 1, 0));
-            positions.add(new Vector3i(position).add(1, 1, 1));
+        private void addEastFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x + 1, y, z + 1));
+            positions.add(new Vector3i(x + 1, y, z));
+            positions.add(new Vector3i(x + 1, y + 1, z));
+            positions.add(new Vector3i(x + 1, y + 1, z + 1));
             addTextureCoords(block.getTextureId(BlockFace.EAST));
             addIndices();
         }
 
-        private void addBottomFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(0, 0, 1));
-            positions.add(new Vector3i(position).add(1, 0, 1));
-            positions.add(new Vector3i(position).add(1, 0, 0));
-            positions.add(new Vector3i(position).add(0, 0, 0));
+        private void addBottomFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x, y, z + 1));
+            positions.add(new Vector3i(x + 1, y, z + 1));
+            positions.add(new Vector3i(x + 1, y, z));
+            positions.add(new Vector3i(x, y, z));
             addTextureCoords(block.getTextureId(BlockFace.BOTTOM));
             addIndices();
         }
 
-        private void addTopFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(1, 1, 0));
-            positions.add(new Vector3i(position).add(0, 1, 0));
-            positions.add(new Vector3i(position).add(0, 1, 1));
-            positions.add(new Vector3i(position).add(1, 1, 1));
+        private void addTopFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x + 1, y + 1, z));
+            positions.add(new Vector3i(x, y + 1, z));
+            positions.add(new Vector3i(x, y + 1, z + 1));
+            positions.add(new Vector3i(x + 1, y + 1, z + 1));
             addTextureCoords(block.getTextureId(BlockFace.TOP));
             addIndices();
         }
 
-        private void addNorthFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(1, 0, 0));
-            positions.add(new Vector3i(position).add(0, 0, 0));
-            positions.add(new Vector3i(position).add(0, 1, 0));
-            positions.add(new Vector3i(position).add(1, 1, 0));
+        private void addNorthFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x + 1, y, z));
+            positions.add(new Vector3i(x, y, z));
+            positions.add(new Vector3i(x, y + 1, z));
+            positions.add(new Vector3i(x + 1, y + 1, z));
             addTextureCoords(block.getTextureId(BlockFace.NORTH));
             addIndices();
         }
 
-        private void addSouthFace(Vector3i position, Block block) {
-            positions.add(new Vector3i(position).add(0, 0, 1));
-            positions.add(new Vector3i(position).add(1, 0, 1));
-            positions.add(new Vector3i(position).add(1, 1, 1));
-            positions.add(new Vector3i(position).add(0, 1, 1));
+        private void addSouthFace(int x, int y, int z, Block block) {
+            positions.add(new Vector3i(x, y, z + 1));
+            positions.add(new Vector3i(x + 1, y, z + 1));
+            positions.add(new Vector3i(x + 1, y + 1, z + 1));
+            positions.add(new Vector3i(x, y + 1, z + 1));
             addTextureCoords(block.getTextureId(BlockFace.SOUTH));
             addIndices();
         }

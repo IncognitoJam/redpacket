@@ -1,6 +1,7 @@
 package com.github.incognitojam.redpacket.world.generator;
 
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
 
@@ -10,15 +11,17 @@ public class WorldGenerator {
 
     private final long seed;
     private final OpenSimplexNoise simplexNoise;
+    private final Vector3i chunkOrigin;
 
     public WorldGenerator(long seed) {
         this.seed = seed;
         simplexNoise = new OpenSimplexNoise(seed);
+        chunkOrigin = new Vector3i();
     }
 
-    public String[] getBlocks(Vector3i chunkPosition) {
-        final Vector3i chunkOrigin = new Vector3i(chunkPosition).mul(CHUNK_SIZE);
+    public String[] getBlocks(Vector3ic chunkPosition) {
         final String[] blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
+        chunkPosition.mul(CHUNK_SIZE, chunkOrigin);
 
         int index = 0;
         for (int x = 0; x < CHUNK_SIZE; x++) {

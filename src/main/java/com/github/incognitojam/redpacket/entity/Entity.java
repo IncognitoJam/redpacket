@@ -48,12 +48,20 @@ public class Entity {
         return VectorUtils.floorDiv(getBlockPosition(), Chunk.CHUNK_SIZE);
     }
 
+    public void setPosition(Vector3fc position) {
+        this.position.set(position);
+    }
+
     public void setPosition(float x, float y, float z) {
         position.set(x, y, z);
     }
 
     public Vector3fc getRotation() {
         return rotation;
+    }
+
+    public void setRotation(Vector3fc rotation) {
+        this.rotation.set(rotation);
     }
 
     public void setRotation(float x, float y, float z) {

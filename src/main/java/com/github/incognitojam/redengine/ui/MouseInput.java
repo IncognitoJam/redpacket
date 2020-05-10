@@ -14,13 +14,11 @@ public class MouseInput {
     private boolean leftButton;
     private boolean rightButton;
 
-    public MouseInput() {
+    public MouseInput(Window window) {
         previousPos = new Vector2d(-1, -1);
         currentPos = new Vector2d(0, 0);
         displacement = new Vector2f();
-    }
 
-    public void init(Window window) {
         // Register GLFW mouse callbacks
         final long handle = window.getHandle();
         glfwSetCursorPosCallback(handle, (h, x, y) -> currentPos.set(x, y));

@@ -13,10 +13,7 @@ import org.joml.Vector3ic;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
 import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
@@ -25,7 +22,6 @@ public class World {
     private final WorldGenerator generator;
     private final HashMap<Vector3ic, Chunk> chunkMap;
     private final Queue<Vector3ic> chunkQueue;
-
     private final List<Entity> entities;
 
     private final TextureMap textureMap;
@@ -36,11 +32,7 @@ public class World {
         generator = new WorldGenerator(seed);
         chunkMap = new HashMap<>();
         chunkQueue = new LinkedTransferQueue<>();
-
         entities = new ArrayList<>();
-        final EntityPlayer player = new EntityPlayer(this);
-        player.setPosition(0, 10, 0);
-        entities.add(player);
 
         textureMap = new TextureMap("textures/blocks.png", 16);
         shader = new ShaderProgram();
@@ -59,6 +51,14 @@ public class World {
 
     public Chunk getChunk(Vector3ic position) {
         return chunkMap.get(position);
+    }
+
+    public void addEntity(Entity entity) {
+        entities.add(entity);
+    }
+
+    public List<Entity> getEntities() {
+        return Collections.unmodifiableList(entities);
     }
 
     public String getBlockId(Vector3ic position) {
@@ -88,8 +88,8 @@ public class World {
          * Add chunks around spawn to the chunk queue so that they can start
          * being created immediately.
          */
-        for (int x = -10; x < 10; x++) {
-            for (int z = -10; z < 10; z++) {
+        for (int x = -2; x < 2; x++) {
+            for (int z = -2; z < 2; z++) {
                 for (int y = 0; y < 4; y++) {
                     chunkQueue.add(new Vector3i(x, y, z));
                 }
@@ -106,6 +106,11 @@ public class World {
             if (position == null) {
                 // No elements in the queue, abort.
                 break;
+            }
+
+            if (chunkMap.containsKey(position)) {
+                // We've already generated this chunk.
+                continue;
             }
 
             // Create the new chunk object and add it to the chunk map.
@@ -142,6 +147,14 @@ public class World {
         // Update all of the entities.
         for (final Entity entity : entities) {
             entity.update(interval);
+
+            if (entity instanceof EntityPlayer) {
+                final Vector3ic currentChunk = entity.getChunkPosition();
+                chunkQueue.add(currentChunk);
+
+                final Vector3ic[] neighbouringChunks = VectorUtils.getNeighbours(currentChunk);
+                chunkQueue.addAll(Arrays.asList(neighbouringChunks));
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import com.github.incognitojam.redengine.graphics.ShaderProgram;
 import com.github.incognitojam.redengine.graphics.TextureMap;
 import com.github.incognitojam.redengine.maths.VectorUtils;
 import com.github.incognitojam.redpacket.entity.Entity;
-import com.github.incognitojam.redpacket.entity.Player;
+import com.github.incognitojam.redpacket.entity.EntityPlayer;
 import com.github.incognitojam.redpacket.world.generator.WorldGenerator;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
@@ -26,32 +26,31 @@ public class World {
     private final HashMap<Vector3ic, Chunk> chunkMap;
     private final Queue<Vector3ic> chunkQueue;
 
-    private final TextureMap textureMap;
     private final List<Entity> entities;
-    private final Matrix4f modelViewMatrix;
+
+    private final TextureMap textureMap;
     private final ShaderProgram shader;
+    private final Matrix4f modelViewMatrix;
 
     public World(long seed) throws Exception {
         generator = new WorldGenerator(seed);
         chunkMap = new HashMap<>();
         chunkQueue = new LinkedTransferQueue<>();
 
-        textureMap = new TextureMap("textures/blocks.png", 16);
-        modelViewMatrix = new Matrix4f();
-
         entities = new ArrayList<>();
-        final Player player = new Player();
+        final EntityPlayer player = new EntityPlayer(this);
         player.setPosition(0, 10, 0);
         entities.add(player);
 
+        textureMap = new TextureMap("textures/blocks.png", 16);
         shader = new ShaderProgram();
         shader.addVertexShader(Files.readString(Paths.get("shaders/basic.vert")));
         shader.addFragmentShader(Files.readString(Paths.get("shaders/basic.frag")));
         shader.link();
-
         shader.createUniform("projectionMatrix");
         shader.createUniform("modelViewMatrix");
         shader.createUniform("textureSampler");
+        modelViewMatrix = new Matrix4f();
     }
 
     public WorldGenerator getGenerator() {
@@ -72,17 +71,23 @@ public class World {
             return null;
         }
 
+        // Get the chunk containing this block position.
         final Vector3ic chunkPosition = VectorUtils.floorDiv(position, CHUNK_SIZE);
         final Chunk chunk = getChunk(chunkPosition);
         if (chunk == null) {
             return "air";
         }
 
+        // Get the block id from the chunk.
         final Vector3ic localPosition = VectorUtils.floorMod(position, CHUNK_SIZE);
         return chunk.getBlockId(localPosition);
     }
 
     public void init() {
+        /*
+         * Add chunks around spawn to the chunk queue so that they can start
+         * being created immediately.
+         */
         for (int x = -10; x < 10; x++) {
             for (int z = -10; z < 10; z++) {
                 for (int y = 0; y < 4; y++) {
@@ -93,9 +98,7 @@ public class World {
     }
 
     public void update(double interval) {
-        /*
-         * Generate new chunks for about 5 milliseconds.
-         */
+        // Generate new chunks for about 5 milliseconds.
         final long startTime = System.currentTimeMillis();
         do {
             // Check the queue for new chunks to generate.
@@ -114,15 +117,7 @@ public class World {
              * Force neighbouring chunks to update their meshes, removing
              * redundant faces.
              */
-            final Vector3ic[] neighbourPositions = {
-                position.add(-1, 0, 0, new Vector3i()),
-                position.add(1, 0, 0, new Vector3i()),
-                position.add(0, -1, 0, new Vector3i()),
-                position.add(0, 1, 0, new Vector3i()),
-                position.add(0, 0, -1, new Vector3i()),
-                position.add(0, 0, 1, new Vector3i()),
-            };
-            for (final Vector3ic neighbourPosition : neighbourPositions) {
+            for (final Vector3ic neighbourPosition : VectorUtils.getNeighbours(position)) {
                 final Chunk neighbourChunk = chunkMap.get(neighbourPosition);
 
                 /*
@@ -133,12 +128,18 @@ public class World {
                     neighbourChunk.setOutdatedMesh(true);
                 }
             }
-        } while (System.currentTimeMillis() < startTime + 1L);
+        } while (System.currentTimeMillis() < startTime + 2L);
 
+        /*
+         * Update all of the chunks.
+         *
+         * TODO: only update chunks around the player
+         */
         for (final Chunk chunk : chunkMap.values()) {
             chunk.update(interval);
         }
 
+        // Update all of the entities.
         for (final Entity entity : entities) {
             entity.update(interval);
         }
@@ -150,6 +151,11 @@ public class World {
         shader.setUniform("textureSampler", 0);
         textureMap.bind();
 
+        /*
+         * Render all of the chunks.
+         *
+         * TODO: only render chunks around the player
+         */
         for (final Chunk chunk : chunkMap.values()) {
             camera.getViewMatrix().get(modelViewMatrix);
             modelViewMatrix.mul(chunk.getWorldMatrix());

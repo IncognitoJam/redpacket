@@ -1,10 +1,11 @@
 package com.github.incognitojam.redpacket.entity;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
+import com.github.incognitojam.redpacket.world.World;
 
-public class Player extends Entity {
-    public Player() {
-        super(buildMesh());
+public class EntityPlayer extends Entity {
+    public EntityPlayer(World world) {
+        super(world, buildMesh());
     }
 
     private static Mesh buildMesh() {

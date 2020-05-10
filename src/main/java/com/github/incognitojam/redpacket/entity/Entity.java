@@ -1,17 +1,21 @@
 package com.github.incognitojam.redpacket.entity;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import com.github.incognitojam.redengine.maths.VectorUtils;
+import com.github.incognitojam.redpacket.world.Chunk;
+import com.github.incognitojam.redpacket.world.World;
+import org.joml.*;
 
 public class Entity {
+    protected final World world;
     protected final Mesh mesh;
     protected final Vector3f position;
     protected final Vector3f rotation;
     protected final Vector3f scale;
     private final Matrix4f worldMatrix;
 
-    public Entity(Mesh mesh) {
+    public Entity(World world, Mesh mesh) {
+        this.world = world;
         this.mesh = mesh;
         position = new Vector3f(0, 0, 0);
         rotation = new Vector3f(0, 0, 0);
@@ -32,15 +36,23 @@ public class Entity {
         mesh.destroy();
     }
 
-    public Vector3f getPosition() {
+    public Vector3fc getPosition() {
         return position;
+    }
+
+    public Vector3ic getBlockPosition() {
+        return VectorUtils.round(getPosition());
+    }
+
+    public Vector3ic getChunkPosition() {
+        return VectorUtils.floorDiv(getBlockPosition(), Chunk.CHUNK_SIZE);
     }
 
     public void setPosition(float x, float y, float z) {
         position.set(x, y, z);
     }
 
-    public Vector3f getRotation() {
+    public Vector3fc getRotation() {
         return rotation;
     }
 
@@ -48,7 +60,7 @@ public class Entity {
         rotation.set(x, y, z);
     }
 
-    public Vector3f getScale() {
+    public Vector3fc getScale() {
         return scale;
     }
 
@@ -60,7 +72,7 @@ public class Entity {
         return mesh;
     }
 
-    public Matrix4f getWorldMatrix() {
+    public Matrix4fc getWorldMatrix() {
         return worldMatrix
             .identity()
             .translate(position)

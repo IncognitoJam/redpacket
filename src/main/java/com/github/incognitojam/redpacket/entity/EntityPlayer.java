@@ -9,6 +9,7 @@ import org.joml.Vector3fc;
 public class EntityPlayer extends Entity {
     private static final Vector3fc DIMENSIONS = new Vector3f(0.8f, 1.8f, 0.8f);
 
+    @NotNull
     protected final String name;
 
     public EntityPlayer(@NotNull World world, @NotNull String name) {
@@ -22,7 +23,7 @@ public class EntityPlayer extends Entity {
      * @return the name of the player.
      */
     @NotNull
-    public String getName() {
+    public final String getName() {
         return name;
     }
 

@@ -72,7 +72,7 @@ public class LocalPlayer extends EntityPlayer {
     }
 
     @NotNull
-    public Camera getCamera() {
+    public final Camera getCamera() {
         return camera;
     }
 

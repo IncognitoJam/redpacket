@@ -1,5 +1,6 @@
 package com.github.incognitojam.redengine.graphics;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -49,6 +50,7 @@ public class Texture {
         glDeleteTextures(id);
     }
 
+    @NotNull
     public static Texture loadTexture(String filename) throws Exception {
         int width, height;
         ByteBuffer buffer;

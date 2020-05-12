@@ -1,11 +1,14 @@
 package com.github.incognitojam.redengine.graphics;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TextureMap {
+    @NotNull
     private final Texture texture;
     private final int size;
     private final float unit;
 
-    public TextureMap(String filename, int size) throws Exception {
+    public TextureMap(@NotNull String filename, int size) throws Exception {
         this.texture = Texture.loadTexture(filename);
         this.size = size;
 
@@ -18,6 +21,7 @@ public class TextureMap {
         unit = 1.0F / (float) size;
     }
 
+    @NotNull
     public Texture getTexture() {
         return texture;
     }
@@ -46,12 +50,11 @@ public class TextureMap {
          * Coordinates of each corner of the texture, counter-clockwise from
          * the bottom left corner.
          */
-        float[] floats = {
+        return new float[] {
             x * unit, (y + 1) * unit,
             (x + 1) * unit, (y + 1) * unit,
             (x + 1) * unit, y * unit,
             x * unit, y * unit
         };
-        return floats;
     }
 }

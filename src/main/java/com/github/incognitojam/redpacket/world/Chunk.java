@@ -7,6 +7,7 @@ import com.github.incognitojam.redpacket.block.Block;
 import com.github.incognitojam.redpacket.block.BlockFace;
 import com.github.incognitojam.redpacket.block.Blocks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -14,41 +15,52 @@ import org.joml.Vector3ic;
 
 import java.util.ArrayList;
 
-public class Chunk {
+public final class Chunk {
     public static final int CHUNK_SIZE = 8;
 
+    @NotNull
     private final World world;
+    @NotNull
     private final Vector3ic position;
+    @NotNull
     private final Vector3ic worldPosition;
+    @NotNull
     private final Matrix4f worldMatrix;
+    @NotNull
     private String[] blocks;
 
+    @NotNull
     private TextureMap textureMap;
     private boolean outdatedMesh;
+    @Nullable
     private Mesh mesh;
 
     public Chunk(@NotNull World world, @NotNull Vector3ic position) {
         this.world = world;
         this.position = position;
 
-        worldPosition = new Vector3i(position).mul(CHUNK_SIZE);
+        worldPosition = position.mul(CHUNK_SIZE, new Vector3i());
         worldMatrix = new Matrix4f().translate(new Vector3f(position).mul(CHUNK_SIZE));
         blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
     }
 
+    @NotNull
     public Vector3ic getPosition() {
         return position;
     }
 
+    @NotNull
     public Matrix4f getWorldMatrix() {
         return worldMatrix;
     }
 
+    @Nullable
     public String getBlockId(int x, int y, int z) {
         return getBlockId(new Vector3i(x, y, z));
     }
 
-    public String getBlockId(Vector3ic position) {
+    @Nullable
+    public String getBlockId(@NotNull Vector3ic position) {
         if (VectorUtils.isOutOfBounds(position, 0, CHUNK_SIZE)) {
             return world.getBlockId(new Vector3i(worldPosition).add(position));
         }
@@ -65,15 +77,19 @@ public class Chunk {
 
     public void update(double interval) {
         if (outdatedMesh) {
-            buildMesh();
+            mesh = new ChunkMeshBuilder()
+                .setOptimiseMesh(true)
+                .build();
             outdatedMesh = false;
         }
     }
 
     public void render() {
-        mesh.bind();
-        mesh.render();
-        mesh.unbind();
+        if (mesh != null) {
+            mesh.bind();
+            mesh.render();
+            mesh.unbind();
+        }
     }
 
     public void destroy() {
@@ -86,20 +102,15 @@ public class Chunk {
         this.outdatedMesh = outdatedMesh;
     }
 
-    private void buildMesh() {
-        mesh = new ChunkMeshBuilder()
-            .setOptimiseMesh(true)
-            .build();
-    }
-
-    private class ChunkMeshBuilder {
+    private final class ChunkMeshBuilder {
+        @NotNull
         private final ArrayList<Vector3ic> positions;
+        @NotNull
         private final ArrayList<Float> textureCoords;
+        @NotNull
         private final ArrayList<Integer> indices;
-
-        private boolean optimiseMesh;
-
         private int vertexCount;
+        private boolean optimiseMesh;
 
         public ChunkMeshBuilder() {
             positions = new ArrayList<>();
@@ -190,7 +201,7 @@ public class Chunk {
             );
         }
 
-        private void addWestFace(int x, int y, int z, Block block) {
+        private void addWestFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x, y, z));
             positions.add(new Vector3i(x, y, z + 1));
             positions.add(new Vector3i(x, y + 1, z + 1));
@@ -199,7 +210,7 @@ public class Chunk {
             addIndices();
         }
 
-        private void addEastFace(int x, int y, int z, Block block) {
+        private void addEastFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x + 1, y, z + 1));
             positions.add(new Vector3i(x + 1, y, z));
             positions.add(new Vector3i(x + 1, y + 1, z));
@@ -208,7 +219,7 @@ public class Chunk {
             addIndices();
         }
 
-        private void addBottomFace(int x, int y, int z, Block block) {
+        private void addBottomFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x, y, z + 1));
             positions.add(new Vector3i(x + 1, y, z + 1));
             positions.add(new Vector3i(x + 1, y, z));
@@ -217,7 +228,7 @@ public class Chunk {
             addIndices();
         }
 
-        private void addTopFace(int x, int y, int z, Block block) {
+        private void addTopFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x + 1, y + 1, z));
             positions.add(new Vector3i(x, y + 1, z));
             positions.add(new Vector3i(x, y + 1, z + 1));
@@ -226,7 +237,7 @@ public class Chunk {
             addIndices();
         }
 
-        private void addNorthFace(int x, int y, int z, Block block) {
+        private void addNorthFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x + 1, y, z));
             positions.add(new Vector3i(x, y, z));
             positions.add(new Vector3i(x, y + 1, z));
@@ -235,7 +246,7 @@ public class Chunk {
             addIndices();
         }
 
-        private void addSouthFace(int x, int y, int z, Block block) {
+        private void addSouthFace(int x, int y, int z, @NotNull Block block) {
             positions.add(new Vector3i(x, y, z + 1));
             positions.add(new Vector3i(x + 1, y, z + 1));
             positions.add(new Vector3i(x + 1, y + 1, z + 1));

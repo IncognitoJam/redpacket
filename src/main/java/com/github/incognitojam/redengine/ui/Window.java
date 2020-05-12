@@ -14,6 +14,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
+    @NotNull
     private String title;
     private int width;
     private int height;

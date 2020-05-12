@@ -9,17 +9,26 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 public class Entity {
+    @NotNull
     protected final World world;
+    @Nullable
     protected final Mesh mesh;
 
+    @NotNull
     protected final Vector3f position;
+    @NotNull
     protected final Vector3f rotation;
+    @NotNull
     protected final Vector3f scale;
 
+    @NotNull
     protected final Vector3fc dimensions;
+    @NotNull
     protected final AABBf boundingBox;
+    @NotNull
     protected final Mesh boundingMesh;
 
+    @NotNull
     private final Matrix4f worldMatrix;
 
     /**
@@ -97,7 +106,7 @@ public class Entity {
      * @return the world object containing this entity.
      */
     @NotNull
-    public World getWorld() {
+    public final World getWorld() {
         return world;
     }
 
@@ -107,7 +116,7 @@ public class Entity {
      * @return the float coordinates of the position of this entity.
      */
     @NotNull
-    public Vector3fc getPosition() {
+    public final Vector3fc getPosition() {
         return position;
     }
 
@@ -117,7 +126,7 @@ public class Entity {
      * @return the integer coordinates of the block containing this entity.
      */
     @NotNull
-    public Vector3ic getBlockPosition() {
+    public final Vector3ic getBlockPosition() {
         return VectorUtils.round(getPosition());
     }
 
@@ -127,7 +136,7 @@ public class Entity {
      * @return the integer coordinates of the chunk containing this entity.
      */
     @NotNull
-    public Vector3ic getChunkPosition() {
+    public final Vector3ic getChunkPosition() {
         return VectorUtils.floorDiv(getBlockPosition(), Chunk.CHUNK_SIZE);
     }
 
@@ -148,7 +157,7 @@ public class Entity {
      * axis.
      */
     @NotNull
-    public Vector3fc getRotation() {
+    public final Vector3fc getRotation() {
         return rotation;
     }
 
@@ -168,7 +177,7 @@ public class Entity {
      * axis.
      */
     @NotNull
-    public Vector3fc getScale() {
+    public final Vector3fc getScale() {
         return scale;
     }
 
@@ -187,22 +196,22 @@ public class Entity {
      * @return a float vector representing dimensions of this entity in each axis.
      */
     @NotNull
-    public Vector3fc getDimensions() {
+    public final Vector3fc getDimensions() {
         return dimensions;
     }
 
     @NotNull
-    public AABBf getBoundingBox() {
+    public final AABBf getBoundingBox() {
         return boundingBox;
     }
 
     @NotNull
-    public Mesh getBoundingMesh() {
+    public final Mesh getBoundingMesh() {
         return boundingMesh;
     }
 
     @NotNull
-    public Matrix4fc getWorldMatrix() {
+    public final Matrix4fc getWorldMatrix() {
         return worldMatrix
             .identity()
             .translate(position)
@@ -212,13 +221,13 @@ public class Entity {
             .scale(scale);
     }
 
-    protected void updateBoundingBox() {
+    protected final void updateBoundingBox() {
         boundingBox.setMin(position);
         boundingBox.setMax(position.add(dimensions, new Vector3f()));
     }
 
     @NotNull
-    public static Mesh createBoundingBoxMesh(@NotNull Vector3fc dimensions) {
+    private static Mesh createBoundingBoxMesh(@NotNull Vector3fc dimensions) {
         final float halfWidth = dimensions.x() / 2.0F;
         final float halfHeight = dimensions.y() / 2.0F;
         final float halfDepth = dimensions.z() / 2.0F;

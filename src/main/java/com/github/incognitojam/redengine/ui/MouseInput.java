@@ -1,5 +1,6 @@
 package com.github.incognitojam.redengine.ui;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
@@ -14,7 +15,7 @@ public class MouseInput {
     private boolean leftButton;
     private boolean rightButton;
 
-    public MouseInput(Window window) {
+    public MouseInput(@NotNull Window window) {
         previousPos = new Vector2d(-1, -1);
         currentPos = new Vector2d(0, 0);
         displacement = new Vector2f();
@@ -29,7 +30,7 @@ public class MouseInput {
         });
     }
 
-    public void update(Window window) {
+    public void update(@NotNull Window window) {
         displacement.zero();
 
         if (previousPos.x > 0 && previousPos.y > 0 && inWindow) {

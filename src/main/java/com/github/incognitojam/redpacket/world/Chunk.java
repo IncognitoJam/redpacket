@@ -6,6 +6,7 @@ import com.github.incognitojam.redengine.maths.VectorUtils;
 import com.github.incognitojam.redpacket.block.Block;
 import com.github.incognitojam.redpacket.block.BlockFace;
 import com.github.incognitojam.redpacket.block.Blocks;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -26,7 +27,7 @@ public class Chunk {
     private boolean outdatedMesh;
     private Mesh mesh;
 
-    public Chunk(World world, Vector3ic position) {
+    public Chunk(@NotNull World world, @NotNull Vector3ic position) {
         this.world = world;
         this.position = position;
 
@@ -124,6 +125,7 @@ public class Chunk {
                         if (blockId.equals("air"))
                             continue;
 
+                        // TODO: handle null block
                         final Block block = Blocks.getBlock(blockId);
 
                         /*

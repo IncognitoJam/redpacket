@@ -2,8 +2,10 @@ package com.github.incognitojam.redpacket;
 
 import com.github.incognitojam.redengine.lifecycle.GameLogic;
 import com.github.incognitojam.redengine.ui.Window;
+import com.github.incognitojam.redpacket.entity.EntityPlayer;
 import com.github.incognitojam.redpacket.entity.LocalPlayer;
 import com.github.incognitojam.redpacket.world.World;
+import org.joml.Vector3f;
 
 public class RedPacket implements GameLogic {
     private Window window;
@@ -22,8 +24,13 @@ public class RedPacket implements GameLogic {
 
         world = new World("hello".hashCode());
         world.init();
-        player = new LocalPlayer(world, window, "Player");
+        player = new LocalPlayer(world, "Player", window);
+        player.setPosition(new Vector3f(0, 24, 0));
         world.addEntity(player);
+
+        final EntityPlayer enemy = new EntityPlayer(world, "Enemy");
+        enemy.setPosition(new Vector3f(0, 24, 0));
+        world.addEntity(enemy);
     }
 
     @Override

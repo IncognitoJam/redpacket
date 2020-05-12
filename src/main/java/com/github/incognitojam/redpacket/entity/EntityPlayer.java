@@ -2,12 +2,55 @@ package com.github.incognitojam.redpacket.entity;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
 import com.github.incognitojam.redpacket.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class EntityPlayer extends Entity {
-    public EntityPlayer(World world) {
-        super(world, buildMesh());
+    private static final Vector3fc DIMENSIONS = new Vector3f(0.8f, 1.8f, 0.8f);
+
+    protected final String name;
+
+    public EntityPlayer(@NotNull World world, @NotNull String name) {
+        super(world, buildMesh(), DIMENSIONS);
+        this.name = name;
     }
 
+    /**
+     * Get the player's name.
+     *
+     * @return the name of the player.
+     */
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Apply a movement vector to the player.
+     * <p>
+     * Moves the player appropriately considering their rotation.
+     *
+     * @param movement The magnitude of the movement in each axis.
+     */
+    public void move(@NotNull Vector3fc movement) {
+        final Vector3f position = new Vector3f(getPosition());
+
+        if (movement.x() != 0) {
+            position.x += (float) Math.sin(rotation.y - (Math.PI / 2)) * -movement.x();
+            position.z += (float) Math.cos(rotation.y - (Math.PI / 2)) * movement.x();
+        }
+        if (movement.z() != 0) {
+            position.x += (float) Math.sin(rotation.y) * -movement.z();
+            position.z += (float) Math.cos(rotation.y) * movement.z();
+        }
+        position.y += movement.y();
+
+        setPosition(position);
+    }
+
+    // TODO: add real player model
+    @NotNull
     private static Mesh buildMesh() {
         final float[] positions = new float[] {
             // 0 (front bottom left)

@@ -1,12 +1,14 @@
 package com.github.incognitojam.redpacket.block;
 
+import org.jetbrains.annotations.NotNull;
+
 public class BlockGrass extends Block {
     protected BlockGrass() {
         super("grass");
     }
 
     @Override
-    public int getTextureId(BlockFace blockFace) {
+    public int getTextureId(@NotNull BlockFace blockFace) {
         switch (blockFace) {
             case TOP:
                 return 2;

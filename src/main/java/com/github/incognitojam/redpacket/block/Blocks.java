@@ -1,5 +1,8 @@
 package com.github.incognitojam.redpacket.block;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +20,14 @@ public class Blocks {
         STONE = registerBlock(new BlockStone());
     }
 
-    private static <T extends Block> T registerBlock(T block) {
+    @NotNull
+    private static <T extends Block> T registerBlock(@NotNull T block) {
         blockMap.put(block.getId(), block);
         return block;
     }
 
-    public static Block getBlock(String id) {
+    @Nullable
+    public static Block getBlock(@NotNull String id) {
         return blockMap.get(id);
     }
 }

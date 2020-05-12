@@ -1,6 +1,7 @@
 package com.github.incognitojam.redengine.lifecycle;
 
 import com.github.incognitojam.redengine.Timer;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -13,7 +14,7 @@ public class GameLoop implements Runnable {
     private final Timer timer;
     private final Thread loopThread;
 
-    public GameLoop(GameLogic gameLogic, float targetFps, float targetUps) {
+    public GameLoop(@NotNull GameLogic gameLogic, float targetFps, float targetUps) {
         this.gameLogic = gameLogic;
         this.targetFps = targetFps;
         this.targetUps = targetUps;

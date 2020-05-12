@@ -1,5 +1,6 @@
 package com.github.incognitojam.redpacket.world.generator;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
@@ -19,7 +20,8 @@ public class WorldGenerator {
         chunkOrigin = new Vector3i();
     }
 
-    public String[] getBlocks(Vector3ic chunkPosition) {
+    @NotNull
+    public String[] getBlocks(@NotNull Vector3ic chunkPosition) {
         final String[] blocks = new String[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
         chunkPosition.mul(CHUNK_SIZE, chunkOrigin);
 

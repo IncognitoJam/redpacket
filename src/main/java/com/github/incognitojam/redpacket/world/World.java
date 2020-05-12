@@ -7,6 +7,8 @@ import com.github.incognitojam.redengine.maths.VectorUtils;
 import com.github.incognitojam.redpacket.entity.Entity;
 import com.github.incognitojam.redpacket.entity.EntityPlayer;
 import com.github.incognitojam.redpacket.world.generator.WorldGenerator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
@@ -17,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.LinkedTransferQueue;
 
 import static com.github.incognitojam.redpacket.world.Chunk.CHUNK_SIZE;
+import static org.lwjgl.opengl.GL11.*;
 
 public class World {
     private final WorldGenerator generator;
@@ -45,23 +48,27 @@ public class World {
         modelViewMatrix = new Matrix4f();
     }
 
+    @NotNull
     public WorldGenerator getGenerator() {
         return generator;
     }
 
-    public Chunk getChunk(Vector3ic position) {
+    @Nullable
+    public Chunk getChunk(@NotNull Vector3ic position) {
         return chunkMap.get(position);
     }
 
-    public void addEntity(Entity entity) {
+    public void addEntity(@NotNull Entity entity) {
         entities.add(entity);
     }
 
+    @NotNull
     public List<Entity> getEntities() {
         return Collections.unmodifiableList(entities);
     }
 
-    public String getBlockId(Vector3ic position) {
+    @Nullable
+    public String getBlockId(@NotNull Vector3ic position) {
         if (position.y() < 0) {
             /*
              * FIXME: I return null to avoid generating faces for the bottom of
@@ -158,7 +165,7 @@ public class World {
         }
     }
 
-    public void render(Camera camera) {
+    public void render(@NotNull Camera camera) {
         shader.bind();
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
         shader.setUniform("textureSampler", 0);
@@ -182,6 +189,17 @@ public class World {
             shader.setUniform("modelViewMatrix", modelViewMatrix);
             entity.render();
         }
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        for (final Entity entity : entities) {
+            camera.getViewMatrix().get(modelViewMatrix);
+            modelViewMatrix.mul(entity.getWorldMatrix());
+            shader.setUniform("modelViewMatrix", modelViewMatrix);
+            entity.renderBounds();
+        }
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         textureMap.unbind();
         shader.unbind();

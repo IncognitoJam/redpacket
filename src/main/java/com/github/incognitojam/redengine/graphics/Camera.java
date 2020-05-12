@@ -2,6 +2,7 @@ package com.github.incognitojam.redengine.graphics;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class Camera {
     private static final float FIELD_OF_VIEW = (float) Math.toRadians(60.0F);
@@ -24,36 +25,20 @@ public class Camera {
         projectionMatrix.identity().perspective(FIELD_OF_VIEW, width / height, Z_NEAR, Z_FAR);
     }
 
-    public void move(Vector3f movement) {
-        if (movement.x != 0) {
-            position.x += (float) Math.sin(rotation.y - (Math.PI / 2)) * -movement.x;
-            position.z += (float) Math.cos(rotation.y - (Math.PI / 2)) * movement.x;
-        }
-        if (movement.z != 0) {
-            position.x += (float) Math.sin(rotation.y) * -movement.z;
-            position.z += (float) Math.cos(rotation.y) * movement.z;
-        }
-        position.y += movement.y;
-    }
-
     public Vector3f getPosition() {
         return position;
     }
 
-    public void setPosition(float x, float y, float z) {
-        position.set(x, y, z);
+    public void setPosition(Vector3fc position) {
+        this.position.set(position);
     }
 
     public Vector3f getRotation() {
         return rotation;
     }
 
-    public void setRotation(float x, float y, float z) {
-        rotation.set(x, y, z);
-    }
-
-    public void rotate(float dx, float dy, float dz) {
-        rotation.add(dx, dy, dz);
+    public void setRotation(Vector3fc rotation) {
+        this.rotation.set(rotation);
     }
 
     public Matrix4f getProjectionMatrix() {

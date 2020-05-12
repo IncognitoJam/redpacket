@@ -1,9 +1,11 @@
 package com.github.incognitojam.redpacket.block;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class Block {
     private final String id;
 
-    protected Block(String id) {
+    protected Block(@NotNull String id) {
         this.id = id;
     }
 
@@ -11,5 +13,5 @@ public abstract class Block {
         return id;
     }
 
-    public abstract int getTextureId(BlockFace blockFace);
+    public abstract int getTextureId(@NotNull BlockFace blockFace);
 }

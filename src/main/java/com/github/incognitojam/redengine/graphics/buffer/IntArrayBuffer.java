@@ -1,5 +1,7 @@
 package com.github.incognitojam.redengine.graphics.buffer;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL15.glBufferData;
@@ -10,7 +12,7 @@ public class IntArrayBuffer extends ArrayBuffer<IntBuffer> {
     }
 
     @Override
-    public void upload(IntBuffer data) {
+    public void upload(@NotNull IntBuffer data) {
         glBufferData(target, data, usage);
     }
 }

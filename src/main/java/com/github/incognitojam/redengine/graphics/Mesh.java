@@ -3,6 +3,7 @@ package com.github.incognitojam.redengine.graphics;
 import com.github.incognitojam.redengine.graphics.array.VertexArray;
 import com.github.incognitojam.redengine.graphics.buffer.FloatArrayBuffer;
 import com.github.incognitojam.redengine.graphics.buffer.IntArrayBuffer;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -18,7 +19,7 @@ public class Mesh {
     private final IntArrayBuffer indicesVbo;
     private final int vertexCount;
 
-    public Mesh(float[] positions, float[] texCoords, int[] indices) {
+    public Mesh(@NotNull float[] positions, @NotNull float[] texCoords, @NotNull int[] indices) {
         vertexCount = indices.length;
 
         FloatBuffer positionsBuffer = null;

@@ -1,5 +1,6 @@
 package com.github.incognitojam.redengine.ui;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -22,7 +23,7 @@ public class Window {
     private boolean resized;
     private final long handle;
 
-    public Window(String title, int width, int height, boolean vSync, boolean cullFace) {
+    public Window(@NotNull String title, int width, int height, boolean vSync, boolean cullFace) {
         this.title = title;
         this.width = width;
         this.height = height;

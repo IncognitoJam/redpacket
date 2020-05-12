@@ -1,5 +1,6 @@
 package com.github.incognitojam.redengine.graphics;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
@@ -25,15 +26,15 @@ public class ShaderProgram {
         uniforms = new HashMap<>();
     }
 
-    public void addVertexShader(String shaderCode) throws Exception {
+    public void addVertexShader(@NotNull String shaderCode) throws Exception {
         shaderIds.add(createShader(GL_VERTEX_SHADER, shaderCode));
     }
 
-    public void addFragmentShader(String shaderCode) throws Exception {
+    public void addFragmentShader(@NotNull String shaderCode) throws Exception {
         shaderIds.add(createShader(GL_FRAGMENT_SHADER, shaderCode));
     }
 
-    protected int createShader(int shaderType, String shaderCode) throws Exception {
+    protected int createShader(int shaderType, @NotNull String shaderCode) throws Exception {
         final int shaderId = glCreateShader(shaderType);
         if (shaderId == GL_FALSE) {
             throw new Exception("Could not create shader. Type: " + shaderType);
@@ -69,7 +70,7 @@ public class ShaderProgram {
         }
     }
 
-    public void createUniform(String uniformName) throws Exception {
+    public void createUniform(@NotNull String uniformName) throws Exception {
         final int uniformLocation = glGetUniformLocation(programId, uniformName);
         if (uniformLocation < 0) {
             throw new Exception("Could not find uniform: " + uniformName);
@@ -77,15 +78,15 @@ public class ShaderProgram {
         uniforms.put(uniformName, uniformLocation);
     }
 
-    public void setUniform(String uniformName, int value) {
+    public void setUniform(@NotNull String uniformName, int value) {
         glUniform1i(uniforms.get(uniformName), value);
     }
 
-    public void setUniform(String uniformName, float value) {
+    public void setUniform(@NotNull String uniformName, float value) {
         glUniform1f(uniforms.get(uniformName), value);
     }
 
-    public void setUniform(String uniformName, Matrix4f value) {
+    public void setUniform(@NotNull String uniformName, @NotNull Matrix4f value) {
         // Dump the matrix into a float buffer
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16);

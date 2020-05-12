@@ -14,6 +14,7 @@ application {
 
 project.ext.lwjglVersion = "3.2.3"
 project.ext.jomlVersion = "1.9.24"
+project.ext.annotationsVersion = "19.0.0"
 
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
@@ -65,7 +66,8 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-    implementation "org.joml:joml:${jomlVersion}"
+    implementation "org.joml:joml:$jomlVersion"
+    implementation "org.jetbrains:annotations:$annotationsVersion"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

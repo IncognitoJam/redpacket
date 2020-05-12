@@ -1,5 +1,7 @@
 package com.github.incognitojam.redengine.graphics.buffer;
 
+import org.jetbrains.annotations.NotNull;
+
 import static org.lwjgl.opengl.GL15.*;
 
 public abstract class Buffer<T> {
@@ -17,7 +19,7 @@ public abstract class Buffer<T> {
         glBindBuffer(target, vboId);
     }
 
-    public abstract void upload(T data);
+    public abstract void upload(@NotNull T data);
 
     public void unbind() {
         glBindBuffer(target, 0);

@@ -13,7 +13,7 @@ public class EntityPlayer extends Entity {
     protected final String name;
 
     public EntityPlayer(@NotNull World world, @NotNull String name) {
-        super(world, buildMesh(), DIMENSIONS);
+        super(world, buildMesh(), DIMENSIONS, 1.0F);
         this.name = name;
     }
 

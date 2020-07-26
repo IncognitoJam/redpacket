@@ -24,9 +24,9 @@ public class VectorUtils {
     @NotNull
     public static Vector3ic round(@NotNull Vector3fc a) {
         return new Vector3i(
-            Math.round(a.x()),
-            Math.round(a.y()),
-            Math.round(a.z())
+            (int) Math.floor(a.x()),
+            (int) Math.floor(a.y()),
+            (int) Math.floor(a.z())
         );
     }
 

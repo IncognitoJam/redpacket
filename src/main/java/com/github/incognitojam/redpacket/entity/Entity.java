@@ -2,13 +2,14 @@ package com.github.incognitojam.redpacket.entity;
 
 import com.github.incognitojam.redengine.graphics.Mesh;
 import com.github.incognitojam.redengine.maths.VectorUtils;
+import com.github.incognitojam.redengine.physics.PhysicsBody;
 import com.github.incognitojam.redpacket.world.Chunk;
 import com.github.incognitojam.redpacket.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
-public class Entity {
+public class Entity extends PhysicsBody {
     @NotNull
     protected final World world;
     @Nullable
@@ -38,7 +39,8 @@ public class Entity {
      * @param mesh       the mesh which should be rendered at this entity's position.
      * @param dimensions the dimensions of this entity's bounding box.
      */
-    public Entity(@NotNull World world, @Nullable Mesh mesh, @NotNull Vector3fc dimensions) {
+    public Entity(@NotNull World world, @Nullable Mesh mesh, @NotNull Vector3fc dimensions, float mass) {
+        super(mass);
         this.world = world;
         this.mesh = mesh;
         this.dimensions = dimensions;
@@ -64,6 +66,8 @@ public class Entity {
      * @param interval the time interval in seconds since the last update.
      */
     public void update(double interval) {
+        applyForce(new Vector3f(0, -1F, 0));
+        super.update(interval);
     }
 
     /**
@@ -115,6 +119,7 @@ public class Entity {
      *
      * @return the float coordinates of the position of this entity.
      */
+    @Override
     @NotNull
     public final Vector3fc getPosition() {
         return position;
@@ -141,7 +146,29 @@ public class Entity {
     }
 
     /**
-     * Update this entity's position.
+     * Attempt to move the entity to a new position.
+     * <p>
+     * Tests whether the position is occupied by a block before updating the
+     * position of the entity. If it is occupied, returns {@code false}
+     * otherwise sets the new position and returns {@code true}.
+     *
+     * @param position the new position of this entity.
+     * @return {@code true} if the update was successful, otherwise {@code false}.
+     */
+    @Override
+    public boolean updatePosition(@NotNull Vector3fc position) {
+        final Vector3ic blockPosition = VectorUtils.round(position);
+        final String blockId = world.getBlockId(blockPosition);
+        if (!"air".equals(blockId)) {
+            return false;
+        }
+
+        setPosition(position);
+        return true;
+    }
+
+    /**
+     * Set this entity's position.
      *
      * @param position the new position of this entity.
      */
@@ -200,11 +227,26 @@ public class Entity {
         return dimensions;
     }
 
+    /**
+     * Get the bounding box for this entity.
+     * <p>
+     * Used for calculating collisions.
+     *
+     * @return an {@link AABBf} object representing the bounds of this entity.
+     */
     @NotNull
     public final AABBf getBoundingBox() {
         return boundingBox;
     }
 
+    /**
+     * Get the mesh occupying the bounding box for this entity.
+     * <p>
+     * Used for drawing collision boxes in debug mode.
+     *
+     * @return a {@link Mesh} positioned and resized to match this entity's
+     * bounding box.
+     */
     @NotNull
     public final Mesh getBoundingMesh() {
         return boundingMesh;

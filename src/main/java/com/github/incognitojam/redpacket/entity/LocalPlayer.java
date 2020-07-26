@@ -79,7 +79,7 @@ public class LocalPlayer extends EntityPlayer {
     @Override
     public void setPosition(@NotNull Vector3fc position) {
         super.setPosition(position);
-        camera.setPosition(getPosition());
+        camera.setPosition(getPosition().add(0.0F, 1.0F, 0.0F, new Vector3f()));
     }
 
     @Override
